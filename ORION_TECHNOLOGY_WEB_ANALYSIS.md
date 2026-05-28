@@ -51,16 +51,17 @@ En Orion Technology no solo hacemos programas; construimos las herramientas del 
     *   *Tech:* Next.js, React, Prisma, MySQL, Tailwind CSS.
 *   **📊 GeoScan Pro (ABRIL 2026):**
     *   *Core:* Consola de prospección B2B impulsada por Inteligencia Artificial y funnel visual.
-    *   *Tech:* Next.js, Firebase, TypeScript, Inteligencia Artificial.
-*   **💼 Nexus Manager (OCTUBRE 2026):**
-    *   *Core:* Centro de control para servicios, tickets de soporte y finanzas empresariales.
-    *   *Tech:* Laravel, React, PHP, MySQL.
+    *   *Tech:* Next.js, Firebase, Tailwind CSS, Inteligencia Artificial.
+*   **🚜 Gecominsa ERP (AGOSTO 2026):**
+    *   *Core:* Centro de comando para control de flota, logística y rentabilidad de maquinaria.
+    *   *Tech:* Next.js, Firebase, GPT-4o, Tailwind CSS.
 *   **🎓 AcademiX Platform (DICIEMBRE 2026):**
-    *   *Core:* Motor de inteligencia (AcademiX AI V3.5) para gestión logística de colegios y horarios.
-    *   *Tech:* Next.js 16, Firebase Firestore, Cloud Functions, tsparticles.
-*   **🏆 MVP Sports (JUNIO 2026):**
-    *   *Core:* SaaS deportivo y aplicación móvil para gestión integral de complejos, torneos y canchas.
-    *   *Tech:* Next.js, React Native, Firebase.
+    *   *Core:* Motor de inteligencia para gestión logística de colegios y horarios.
+    *   *Tech:* Next.js, Firebase, Tailwind CSS.
+*   **🏆 MVP Sports Chile (JUNIO 2026):**
+    *   *Core:* SaaS deportivo y aplicación móvil para gestión integral de complejos y reservas.
+    *   *Tech:* Next.js, React Native, Firebase, Webpay Plus.
+
 
 ---
 
@@ -71,9 +72,9 @@ En Orion Technology no solo hacemos programas; construimos las herramientas del 
 | :--- | :--- | :---: | :--- |
 | **Nutricionista Katherine** | Salud y Nutrición | 100% | **FINALIZADO** |
 | **GeoScan Pro** | Ventas y Prospección | 100% | **FINALIZADO** |
-| **Nexus Manager** | Gestión de Servicios | 93.5% | **EN DESARROLLO** |
-| **AcademiX Platform** | Gestión Escolar | 99.5% | **OPERATIVO** |
-| **MVP Sports** | App Deportiva | 93% | **OPERATIVO** |
+| **Gecominsa ERP** | Gestión Industrial | 100% | **FINALIZADO** |
+| **AcademiX Platform** | Gestión Escolar | 100% | **FINALIZADO** |
+| **MVP Sports Chile** | Gestión Deportiva | 100% | **FINALIZADO** |
 
 ---
 **ORION TECHNOLOGY - 2026**
