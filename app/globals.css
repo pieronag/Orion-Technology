@@ -303,26 +303,6 @@ h1, h2, h3, h4, h5, h6 {
 .nav-links a:hover {
   color: var(--text);
 }
-.theme-toggle {
-  background: var(--bg-accent);
-  border: 1px solid var(--border-light);
-  color: var(--text);
-  cursor: pointer;
-  font-size: 1.2rem;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
-.theme-toggle:hover {
-  transform: rotate(15deg);
-  border-color: var(--primary);
-  color: var(--primary);
-}
-
 .logo-text {
   font-weight: 900;
   font-size: 1.5rem;
