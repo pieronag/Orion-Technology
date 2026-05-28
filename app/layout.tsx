@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import BackToTop from "@/components/BackToTop";
 import "./globals.css";
 
@@ -21,6 +22,7 @@ export default function RootLayout({
       <body className={outfit.className}>
         {children}
         <BackToTop />
+        <Analytics />
       </body>
     </html>
   );
