@@ -18,9 +18,37 @@ export async function generateMetadata({
   const { id } = await params;
   const project = projects.find((p) => p.id === id);
 
+  if (!project) return { title: "Proyecto no encontrado" };
+
+  const techKeywords = project.tech.join(", ");
+  const dynamicKeywords = `${project.title}, ${project.category}, desarrollo de software a medida, ${techKeywords}, Orion Technology portfolio`;
+
   return {
-    title: project ? `${project.title} | Orion Technology` : "Proyecto | Orion Technology",
-    description: project?.description || "Detalle del proyecto de software de Orion Technology.",
+    title: `${project.title} - ${project.category}`,
+    description: project.description,
+    keywords: dynamicKeywords,
+    openGraph: {
+      title: `${project.title} | Orion Technology`,
+      description: project.description,
+      url: `https://www.oriontechnology.cl/portfolio/${project.id}`,
+      siteName: "Orion Technology",
+      images: [
+        {
+          url: project.image,
+          width: 1200,
+          height: 630,
+          alt: `Vista de ${project.title}`,
+        },
+      ],
+      locale: "es_CL",
+      type: "article",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${project.title} | Orion Technology`,
+      description: project.description,
+      images: [project.image],
+    },
   };
 }
 
