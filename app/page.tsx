@@ -4,7 +4,7 @@ import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import BackToTop from "@/components/BackToTop";
 import { projects } from "@/data/projects";
-import { Cpu, Smartphone, Map, Settings, Shield, Frame, Rocket, Layers, Code, Zap, ChevronRight, CheckCircle2, LayoutTemplate, MessageCircle, BarChart3, Database } from "lucide-react";
+import { Cpu, Smartphone, Map, Settings, Shield, Frame, Rocket, Layers, Code, Zap, ChevronRight, CheckCircle2, LayoutTemplate, MessageCircle, BarChart3, Database, CreditCard, Receipt } from "lucide-react";
 
 export default function Home() {
   return (
@@ -271,6 +271,34 @@ export default function Home() {
               </Link>
             );
           })}
+        </div>
+      </section>
+
+      {/* Medios de Pago */}
+      <section id="pagos" className="section container" style={{ paddingTop: "2rem", paddingBottom: "2rem" }}>
+        <div className="glass-panel" style={{ padding: "3rem", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "2rem" }}>
+          <div style={{ flex: "1 1 300px" }}>
+            <h2 style={{ fontSize: "clamp(1.8rem, 4vw, 2.5rem)", marginBottom: "1rem" }}>Medios de Pago y Facturación</h2>
+            <p className="text-muted" style={{ fontSize: "1.05rem", lineHeight: "1.6", marginBottom: "1.5rem" }}>
+              En Orion Technology queremos que digitalizar tu negocio sea un proceso claro y sin fricciones. Aceptamos pagos con tarjetas de <strong>crédito y débito</strong>, y emitimos <strong>factura o boleta</strong> para tu total tranquilidad contable.
+            </p>
+            <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", background: "var(--bg)", padding: "0.5rem 1rem", borderRadius: "8px", border: "1px solid var(--glass-border)" }}>
+                <CreditCard size={20} color="var(--primary)" />
+                <span style={{ fontWeight: "600", fontSize: "0.9rem" }}>Crédito y Débito</span>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", background: "var(--bg)", padding: "0.5rem 1rem", borderRadius: "8px", border: "1px solid var(--glass-border)" }}>
+                <Receipt size={20} color="var(--primary)" />
+                <span style={{ fontWeight: "600", fontSize: "0.9rem" }}>Factura y Boleta</span>
+              </div>
+            </div>
+          </div>
+          <div style={{ flex: "0 1 250px", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem" }}>
+            <span style={{ fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-muted)", fontWeight: "700" }}>Operamos asociados a</span>
+            <div style={{ background: "rgba(255,255,255,0.02)", padding: "1.5rem", borderRadius: "12px", border: "1px solid var(--glass-border)", width: "100%", display: "flex", justifyContent: "center", transition: "transform 0.3s ease", cursor: "default" }} className="hover-scale">
+              <Image src="/Getnet-logo.webp" alt="Getnet Logo" width={160} height={60} style={{ objectFit: "contain", filter: "drop-shadow(0 4px 6px rgba(0,0,0,0.2))" }} />
+            </div>
+          </div>
         </div>
       </section>
 

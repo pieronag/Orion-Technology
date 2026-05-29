@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   },
   description: "Agencia especializada en desarrollo de software a medida, sistemas ERP corporativos, aplicaciones móviles e inteligencia artificial. Transforma tu empresa hacia el futuro digital.",
   keywords: [
-    "desarrollo de software a medida", "fábrica de software Chile", "desarrollo web corporativo", 
+    "desarrollo de software a medida", "fábrica de software Chile", "desarrollo web corporativo",
     "creación de aplicaciones móviles", "SaaS a medida", "desarrollo Next.js", "agencia tecnológica",
     "inteligencia artificial para empresas", "sistemas ERP a medida", "automatización de procesos B2B",
     "transformación digital", "plataformas logísticas", "Orion Technology"
