@@ -281,7 +281,7 @@ export default function Home() {
           <p className="subtitle" style={{ margin: "0 auto 2.5rem" }}>
             Hablemos sobre tu idea y cómo podemos ayudarte a hacerla realidad en tiempo récord.
           </p>
-          <a href="https://wa.me/56950194398?text=Hola%20Equipo%20de%20Orion%20Technology%21%20%F0%9F%91%8B%20He%20visitado%20su%20p%C3%A1gina%20web%20y%20me%20interesa%20cotizar%20el%20desarrollo%20de%20un%20proyecto%20tecnol%C3%B3gico%20para%20mi%20negocio.%20%C2%BFMe%20pueden%20asesorar%3F" target="_blank" rel="noopener noreferrer" className="btn btn-primary" style={{ gap: "0.5rem", background: "#25D366", borderColor: "#25D366", color: "#ffffff", padding: "1rem 2.5rem", fontSize: "1.1rem", fontWeight: "700" }}>
+          <a href="https://wa.me/56950194398?text=Hola%20Equipo%20de%20Orion%20Technology%21%20%F0%9F%91%8B%20He%20visitado%20su%20p%C3%A1gina%20web%20y%20me%20interesa%20cotizar%20el%20desarrollo%20de%20un%20proyecto%20tecnol%C3%B3gico%20para%20mi%20negocio.%20%C2%BFMe%20pueden%20asesorar%3F" target="_blank" rel="noopener noreferrer" className="btn btn-primary" style={{ gap: "0.5rem", padding: "1rem 2.5rem", fontSize: "1.1rem", fontWeight: "700", color: "#ffffff" }}>
             <MessageCircle size={22} /> Cotizar mi proyecto ahora
           </a>
         </div>

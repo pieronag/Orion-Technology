@@ -4,7 +4,7 @@ import { Analytics } from "@vercel/analytics/next";
 import BackToTop from "@/components/BackToTop";
 import "./globals.css";
 
-const outfit = Outfit({ subsets: ["latin"] });
+const outfit = Outfit({ subsets: ["latin"], display: 'swap' });
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.oriontechnology.cl'),

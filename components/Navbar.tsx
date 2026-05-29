@@ -27,7 +27,8 @@ export default function Navbar() {
             height={40}
             style={{ objectFit: 'contain', transition: '0.3s', filter: 'invert(1) brightness(0)' }}
             priority
-            sizes="120px"
+            sizes="(max-width: 768px) 120px, 120px"
+            quality={75}
           />
         </Link>
 
