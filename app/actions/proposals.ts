@@ -142,3 +142,67 @@ export async function unlockProposal(id: string, plainPassword: string) {
     return { success: false, error: 'Error interno' };
   }
 }
+
+// Obtener detalles completos para el modo de edición (Admin)
+export async function getProposalAdminInfo(id: string) {
+  if (!id) return { success: false, error: 'not_found' };
+  
+  try {
+    const doc = await getDb().collection('proposals').doc(id).get();
+    
+    if (!doc.exists) {
+      return { success: false, error: 'not_found' };
+    }
+
+    const data = doc.data()!;
+    return { 
+      success: true, 
+      proposal: {
+        id: data.id,
+        title: data.title,
+        clientName: data.clientName,
+        content: data.content,
+      }
+    };
+  } catch (error) {
+    console.error('Error fetching admin info:', error);
+    return { success: false, error: 'error' };
+  }
+}
+
+// Actualizar propuesta existente
+export async function updateProposal(id: string, data: Partial<ProposalData>, plainPassword?: string) {
+  if (!id) return { success: false, error: 'ID no proporcionado' };
+
+  try {
+    const updatePayload: any = {
+      title: data.title,
+      clientName: data.clientName,
+      content: data.content,
+    };
+
+    if (plainPassword) {
+      updatePayload.passwordHash = await bcrypt.hash(plainPassword, 10);
+    }
+
+    await getDb().collection('proposals').doc(id).update(updatePayload);
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error updating proposal:', error);
+    return { success: false, error: 'Error al actualizar la propuesta' };
+  }
+}
+
+// Eliminar propuesta permanentemente
+export async function deleteProposal(id: string) {
+  if (!id) return { success: false, error: 'ID no proporcionado' };
+
+  try {
+    await getDb().collection('proposals').doc(id).delete();
+    return { success: true };
+  } catch (error) {
+    console.error('Error deleting proposal:', error);
+    return { success: false, error: 'Error al eliminar la propuesta' };
+  }
+}

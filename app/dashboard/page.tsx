@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { ExternalLink, Clock, CheckCircle2, Eye } from 'lucide-react';
+import ProposalActions from '@/components/ProposalActions';
 
 export const dynamic = 'force-dynamic';
 
@@ -120,15 +121,20 @@ export default async function DashboardPage() {
                     </div>
                   </td>
                   <td style={{ padding: "1.5rem", textAlign: "right" }}>
-                    <a 
-                      href={`/p/${p.id}`} 
-                      target="_blank" 
-                      rel="noreferrer"
-                      style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem", color: "var(--secondary)", textDecoration: "none", fontWeight: "700", fontSize: "0.9rem", transition: "transform 0.2s" }}
-                      className="hover-scale"
-                    >
-                      Abrir Enlace <ExternalLink size={16} />
-                    </a>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "1rem" }}>
+                      <a 
+                        href={`/p/${p.id}`} 
+                        target="_blank" 
+                        rel="noreferrer"
+                        style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem", color: "var(--secondary)", textDecoration: "none", fontWeight: "700", fontSize: "0.9rem", transition: "transform 0.2s" }}
+                        className="hover-scale"
+                        title="Ver Propuesta"
+                      >
+                        <ExternalLink size={16} /> Ver
+                      </a>
+                      <div style={{ width: "1px", height: "20px", background: "var(--glass-border)" }}></div>
+                      <ProposalActions id={p.id} />
+                    </div>
                   </td>
                 </tr>
               )
