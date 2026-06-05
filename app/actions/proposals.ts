@@ -1,6 +1,6 @@
 'use server'
 
-import { db } from '@/lib/firebase-admin';
+import { getDb } from '@/lib/firebase-admin';
 import bcrypt from 'bcrypt';
 import { addDays } from 'date-fns';
 import { randomUUID } from 'crypto';
@@ -37,7 +37,7 @@ export async function createProposal(data: ProposalData, plainPassword: string) 
       status: 'sent',
     };
 
-    await db.collection('proposals').doc(id).set(proposalDoc);
+    await getDb().collection('proposals').doc(id).set(proposalDoc);
 
     return { success: true, id };
   } catch (error) {
@@ -49,7 +49,7 @@ export async function createProposal(data: ProposalData, plainPassword: string) 
 // Obtener todas las propuestas para el dashboard admin
 export async function getProposals() {
   try {
-    const snapshot = await db.collection('proposals').orderBy('createdAt', 'desc').get();
+    const snapshot = await getDb().collection('proposals').orderBy('createdAt', 'desc').get();
     const proposals = snapshot.docs.map(doc => {
       const data = doc.data();
       return {
@@ -73,7 +73,7 @@ export async function getProposalPublicInfo(id: string) {
   if (!id) return { success: false, error: 'not_found' };
   
   try {
-    const doc = await db.collection('proposals').doc(id).get();
+    const doc = await getDb().collection('proposals').doc(id).get();
     
     if (!doc.exists) {
       return { success: false, error: 'not_found' };
@@ -107,7 +107,7 @@ export async function unlockProposal(id: string, plainPassword: string) {
   if (!id) return { success: false, error: 'Propuesta no encontrada' };
 
   try {
-    const doc = await db.collection('proposals').doc(id).get();
+    const doc = await getDb().collection('proposals').doc(id).get();
     
     if (!doc.exists) {
       return { success: false, error: 'Propuesta no encontrada' };
@@ -128,7 +128,7 @@ export async function unlockProposal(id: string, plainPassword: string) {
 
     // Actualizar estado a visto si estaba en sent
     if (data.status === 'sent') {
-      await db.collection('proposals').doc(id).update({
+      await getDb().collection('proposals').doc(id).update({
         status: 'viewed'
       });
     }
