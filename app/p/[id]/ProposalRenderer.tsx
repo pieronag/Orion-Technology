@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { acceptProposal } from '@/app/actions/proposals';
-import { CheckCircle2, Code, Zap, Layers, Sparkles, BarChart3, ImageIcon, DollarSign, GitCompare, Download, ExternalLink, Loader2 } from 'lucide-react';
+import { CheckCircle2, Code, Zap, Layers, Sparkles, BarChart3, ImageIcon, DollarSign, GitCompare, Download, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
 import BackToTop from '@/components/BackToTop';
 import type { ProposalContent } from '@/lib/proposal-helpers';
@@ -106,9 +106,7 @@ export default function ProposalRenderer({ data, proposalInfo, files, onAccepted
         <div className="container" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <Image src="/logo_white.png" alt="Orion Logo" width={85} height={28} style={{ objectFit: 'contain', filter: 'invert(1) brightness(0)' }} priority />
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <button onClick={generatePDF} disabled={pdfLoading} style={{ padding: "0.35rem 0.7rem", fontSize: "0.7rem", background: "rgba(124,58,237,0.06)", border: "1px solid rgba(124,58,237,0.2)", color: "var(--primary)", borderRadius: "6px", fontWeight: "600", cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: "0.3rem" }}>
-              {pdfLoading ? <Loader2 size={13} style={{ animation: "spin 0.6s linear infinite" }} /> : <Download size={13} />} PDF
-            </button>
+
             <a href={`https://wa.me/?text=${encodeURIComponent(`Propuesta para ${p.clientName}: ${typeof window !== 'undefined' ? window.location.href : ''}`)}`} target="_blank" rel="noreferrer" style={{ padding: "0.35rem 0.7rem", fontSize: "0.7rem", background: "rgba(16,185,129,0.06)", border: "1px solid rgba(16,185,129,0.2)", color: "#10b981", textDecoration: "none", borderRadius: "6px", fontWeight: "600", display: "flex", alignItems: "center", gap: "0.3rem" }}>
               <ExternalLink size={13} /> Compartir
             </a>

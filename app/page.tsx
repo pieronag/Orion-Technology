@@ -58,12 +58,7 @@ export default function Home() {
               </div>
             </div>
             
-            <div style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem", marginTop: "auto", paddingTop: "1rem" }}>
-              <span style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.15em", color: "var(--text-muted)", fontWeight: "800" }}>Alianza Oficial</span>
-              <div style={{ width: "100%", display: "flex", justifyContent: "center", transition: "transform 0.3s ease", cursor: "default" }} className="hover-scale">
-                <Image src="/Getnet-logo.webp" alt="Getnet Logo" width={160} height={55} style={{ objectFit: "contain", filter: "drop-shadow(0 4px 10px rgba(0,0,0,0.3))" }} />
-              </div>
-            </div>
+            <div style={{ marginTop: "auto", paddingTop: "1rem" }} />
           </div>
         </div>
 
