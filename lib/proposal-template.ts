@@ -1,39 +1,110 @@
-export const saraProposalTemplate = {
-  intro: "La presente propuesta detalla la creación de un ecosistema digital personalizado diseñado para elevar el estándar de la práctica clínica de Sara Largacha Vivas. En un mercado donde las herramientas genéricas fuerzan al profesional a adaptar su metodología al software, nuestra propuesta hace lo inverso: construimos una herramienta tecnológica a medida que potencia su metodología clínica, eliminando la fricción administrativa y permitiendo una toma de decisiones basada en datos reales. El proyecto trasciende la simple gestión de pacientes para ejecutar una Reingeniería de Procesos, transformando el seguimiento terapéutico en un activo de alto valor clínico.",
-  objectives: [
-    { title: "Soberanía Tecnológica y Control Total", desc: "A diferencia de las plataformas cerradas, entregamos un código fuente y una base de datos 100% bajo su control. Esto elimina la dependencia de licencias de terceros, plugins obsoletos o políticas de cambios unilaterales por parte de proveedores de software." },
-    { title: "Precisión Terapéutica y Adherencia", desc: "Desarrollamos una plataforma enfocada en el acompañamiento del paciente mediante la consolidación de métricas antropométricas, gestión histórica de planes y una biblioteca educativa que asegura que el paciente reciba la información correcta en el momento preciso." },
-    { title: "Eficiencia Operativa Extrema", desc: "Optimizamos el flujo de trabajo mediante la automatización de la sincronización de pacientes. Al integrar los datos de Encuadrado de forma inteligente, eliminamos la carga de digitación manual, reduciendo a cero el error humano en la creación de perfiles y permitiendo una administración transparente." }
-  ],
-  development: {
-    web: {
-      title: "1. LA WEB: PORTAL DE CAPTACIÓN",
-      desc: "Migración estratégica hacia un entorno tecnológico de alto rendimiento, diseñado no solo para informar, sino para convertir visitantes en pacientes.",
-      items: [
-        { title: "Arquitectura SPA (Single Page Application)", desc: "Construiremos la web utilizando React y Vite, tecnología de punta que permite una navegación instantánea sin recargas de página. Esto no solo mejora la experiencia de usuario, sino que posiciona su marca como una autoridad tecnológica en el sector salud." },
-        { title: "Identidad Clínica & Conversión", desc: "Diseño de Landing Page inmersiva enfocada en su identidad profesional. Integración estratégica de botones de acción (CTA) que derivan al paciente directamente a su plataforma de agendamiento en Encuadrado, asegurando que ningún lead se pierda en el proceso." }
-      ]
+import { ProposalContent } from './proposal-helpers';
+
+export const defaultProposalTemplate: ProposalContent = {
+  authorName: 'Piero Abarca',
+  authorRole: 'Arquitecto de Software y Desarrollador Fullstack',
+  title: 'Transformación Digital: Ecosistema E-commerce y Sistema de Gestión Retail Multi-Sucursal',
+  subtitle: 'Migración a React, Centralización de Inventario en Rancagua y Machalí, Perfiles de Mascotas con Sugerencias Inteligentes, y Arquitectura Preparada para FACTO',
+  clientName: 'Maskota Center',
+  introObjectives: `Maskota Center ha construido una marca sólida en la Región de O'Higgins, consolidándose como un centro de bienestar para mascotas con presencia en Rancagua y Machalí. Sin embargo, su plataforma actual en WordPress con Elementor presenta limitaciones técnicas que frenan su crecimiento: velocidad de carga reducida, nula integración entre sus dos sucursales, y la imposibilidad de ofrecer una experiencia personalizada a sus clientes.
+
+La presente propuesta tiene como objetivo reemplazar por completo su sitio web actual por un ecosistema digital moderno construido en React y Next.js, complementado con un sistema de gestión retail que unifique la operación de ambas sucursales en tiempo real. Buscamos que la tecnología trabaje en segundo plano para que usted y su equipo puedan enfocarse en lo que mejor hacen: entregar amor y salud a las mascotas de la región.
+
+**Objetivos del proyecto:**
+
+**Centralizar la operación dual:** Unificar Rancagua y Machalí en un solo sistema con stock independiente visible al instante, más transferencias ágiles entre locales.
+
+**Fidelizar mediante datos concretos:** Cada mascota registrada con su especie, raza, peso, edad y fotografía activará un motor de sugerencias que anticipa las necesidades del cliente y facilita la recompra.
+
+**Preparar el negocio para el futuro:** Dejar la arquitectura lista para conectar con la API de FACTO cuando esté disponible, evitando tener que reescribir código más adelante.
+
+**Modernizar la experiencia de compra:** Un catálogo rápido, diseño adaptable a cualquier dispositivo, Webpay Plus integrado, y despachos configurables por comuna.`,
+  developmentGroups: [
+    {
+      title: 'Fase 1: Nueva Web Premium',
+      description: 'Doce días hábiles para reemplazar completamente WordPress por una aplicación web moderna en React y Next.js, sentando las bases técnicas para todas las funcionalidades posteriores.',
+      modules: [
+        {
+          name: 'Migración a React SPA',
+          description: 'Reemplazaremos completamente el sitio actual construido en WordPress y Elementor por una aplicación web moderna desarrollada en React con Next.js. Esto mejora drásticamente la velocidad de carga —pasando de recargas de página completas a una navegación instantánea— y sienta las bases técnicas para todas las funcionalidades posteriores. El catálogo de productos será dinámico y estará sincronizado en tiempo real con el inventario de ambas sucursales. Cada ficha de producto mostrará información detallada y el stock disponible en Rancagua y Machalí de forma separada. Los clientes podrán buscar productos por nombre, categoría, especie o raza, y el diseño será completamente responsivo, adaptándose perfectamente a celulares, tablets y computadores.',
+          investment: '2 UF',
+        },
+        {
+          name: 'Perfiles de Mascotas (Pet Dashboard)',
+          description: 'Implementaremos un sistema de registro y autenticación de clientes que permitirá a cada usuario crear una cuenta personal. Dentro de su perfil, podrán agregar una o más mascotas con los siguientes datos: especie, raza, peso actual, fecha de nacimiento o edad, y fotografía de perfil almacenada de forma segura en la base de datos en formato Base64. Cada mascota quedará asociada al historial de compras del cliente, permitiendo al sistema ofrecer recomendaciones precisas basadas en el tipo de animal y sus productos adquiridos previamente. Este módulo transforma una simple tienda online en una experiencia personalizada donde el cliente siente que la plataforma conoce a su compañero de cuatro patas.',
+          investment: '1.5 UF',
+        },
+        {
+          name: 'Motor de Sugerencias Inteligentes',
+          description: 'El sistema analizará los datos registrados de cada mascota —especialmente su peso, raza y edad— para calcular automáticamente la duración estimada del alimento que el cliente compró. Cuando detecte que el producto está por agotarse, generará alertas visibles tanto para el cliente en su sesión como para el equipo de Maskota Center en el panel administrativo. Por ejemplo: si un cliente registró un Pastor Alemán de 25 kg y compró un saco de 15 kg, el sistema calculará que el alimento dura aproximadamente 20 días. Al cumplirse 15 días, mostrará una sugerencia. Este módulo también incluye recomendaciones de productos complementarios basados en compras anteriores y en el perfil de la mascota, aumentando el ticket promedio de cada venta.',
+          investment: '1.5 UF',
+        },
+      ],
+      subtotal: '5 UF',
+      timeline: '12 días hábiles',
     },
-    system: {
-      title: "2. EL SISTEMA: GESTIÓN CLÍNICA",
-      desc: "El corazón operativo de la consulta, diseñado para el diagnóstico de precisión y la fidelización del paciente.",
-      items: [
-        { title: "Core & Sync Engine (Sincronización Inteligente)", desc: "Desarrollo de una API privada que actúa como el cerebro clínico. Incluye un módulo de importación de datos diseñado específicamente para procesar los reportes semanales de Encuadrado. Utilizaremos el RUT como llave única para actualizar perfiles existentes e insertar nuevos, garantizando que el historial clínico nunca se duplique ni se pierda." },
-        { title: "Interfaz UI Premium (High-Density HUD)", desc: "Un panel de control administrativo construido bajo el concepto 'Executive Slim', diseñado para mostrar la mayor cantidad de información clínica relevante en un solo vistazo, reduciendo la fatiga visual del profesional durante las consultas." },
-        { title: "Gestor de Planes Alimentarios", desc: "Sistema de carga de archivos PDF con historial versionado. El profesional puede ver la evolución de las pautas entregadas, mientras que el paciente visualiza exclusivamente su plan vigente, manteniendo una interfaz limpia y evitando confusiones." },
-        { title: "Mensajería 1:1", desc: "Canal de comunicación interna en tiempo real. Este módulo permite un seguimiento terapéutico directo y privado, permitiendo a la profesional gestionar sus tiempos de respuesta mientras mantiene una línea de contacto constante con sus pacientes." },
-        { title: "Gamificación & Motor Educativo", desc: "Implementación de un sistema de logros automáticos que premian la adherencia del paciente, incentivando su progreso. Incluye una biblioteca de videos (alojados de forma privada en YouTube) con un sistema de desbloqueo secuencial: el paciente debe completar el video educativo anterior para acceder al siguiente, asegurando el proceso de aprendizaje." }
-      ]
-    }
-  },
-  integration: "Es fundamental comprender que la integración con plataformas cerradas como Encuadrado debe ser abordada con seguridad técnica. Al no existir una API pública, la Sincronización Inteligente desarrollada por Orion Technology es el estándar de oro profesional: un proceso de importación supervisado que trata su información como un activo de alta seguridad. Esto permite que la profesional mantenga su flujo de agendamiento externo mientras centraliza toda su inteligencia clínica en una plataforma propia, escalable y robusta.",
+    {
+      title: 'Fase 2: Sistema de Gestión Retail',
+      description: 'Trece días hábiles para desarrollar el núcleo operativo que unificará la gestión de ambas sucursales, el punto de venta, los despachos y la preparación para la integración con FACTO.',
+      modules: [
+        {
+          name: 'Inventario Multi-Sucursal con Transferencias',
+          description: 'Desarrollaremos un sistema de inventario que maneje de forma independiente el stock de cada sucursal (Rancagua y Machalí), pero con la flexibilidad de realizar transferencias entre locales con un solo clic. El panel administrativo mostrará una vista unificada con el detalle de cada sucursal: stock en Rancagua, stock en Machalí, y total disponible. Cuando un producto se vende en una sucursal, el stock se descuenta automáticamente de esa ubicación. Si el inventario de una sucursal está bajo, el sistema activará alertas visuales para que los dueños puedan transferir productos desde el otro local o realizar un pedido a proveedores. El sistema será compatible con pistolas de código de barras y permitirá configurar alertas de stock crítico personalizadas por producto.',
+          investment: '2 UF',
+        },
+        {
+          name: 'Omni-POS y Webpay Plus',
+          description: 'Unificaremos la experiencia de venta física y online en una sola interfaz intuitiva. El Punto de Venta (POS) estará diseñado para ser operado por los dos dueños simultáneamente, cada uno desde su sucursal, sin conflictos de sesión ni pérdida de datos. Incluye: registro de ventas con búsqueda rápida de productos, lectura de código de barras para agilizar el cobro, integración con Webpay Plus para pagos con tarjeta de crédito y débito (online y presencial), arqueo de caja automático con detalle completo de efectivo, Webpay y transferencias, e historial de ventas por sucursal. Cuando se realiza una venta online, el sistema descuenta el stock de la sucursal seleccionada por el cliente y prepara automáticamente la orden para despacho.',
+          investment: '1.5 UF',
+        },
+        {
+          name: 'Gestión de Despachos y Arquitectura FACTO Ready',
+          description: 'Los dueños podrán configurar desde el panel las comunas a las que realizan envíos (Rancagua y Machalí) y asignar un precio de despacho por cada una. El cliente, al momento de comprar, seleccionará su comuna y el sistema calculará automáticamente el costo de envío. Las reglas de despacho serán totalmente configurables: monto mínimo para despacho gratuito, horarios de corte para Same-Day Delivery, y zonas prioritarias. En cuanto a FACTO, Maskota Center utiliza actualmente esta plataforma para su facturación electrónica a través de su sitio web, sin acceso a API. Nuestra arquitectura contempla dejar preparado un módulo de integración listo para conectar con la API REST de FACTO en el momento en que ustedes obtengan las credenciales de acceso. Esto significa que el sistema se construye con los endpoints de integración ya definidos, cuando FACTO active su API la conexión se realiza en cuestión de horas, no será necesario reescribir ni modificar el código existente, y mientras tanto el sistema funciona de forma completamente autónoma.',
+          investment: '1.5 UF',
+        },
+      ],
+      subtotal: '5 UF',
+      timeline: '13 días hábiles',
+    },
+  ],
+  comparativeAnalysis: '',
+  integration: '',
+  differentiators: [
+    {
+      label: 'A',
+      title: 'Inventario Visible en Tiempo Real — Sin Conjeturas',
+      description: 'Los clientes verán exactamente cuántos productos hay disponibles en cada sucursal directamente desde la web: "10 unidades en Rancagua, 20 en Machalí". Si una sucursal no tiene stock, el sistema sugerirá automáticamente la otra ubicación o la opción de despacho a domicilio. Esto elimina las llamadas telefónicas para consultar disponibilidad y mejora la tasa de conversión.',
+    },
+    {
+      label: 'B',
+      title: 'CRM Predictivo — El Sistema que Vende por Usted',
+      description: 'El motor de sugerencias no solo recomienda productos: aprende del comportamiento de cada cliente y genera oportunidades de venta de forma autónoma. Cuando una mascota está por quedarse sin alimento, el sistema alerta al equipo de Maskota Center para que contacte al cliente antes de que busque opciones en la competencia. Este modelo de negocio convierte la fidelización en ingresos recurrentes y predecibles.',
+    },
+    {
+      label: 'C',
+      title: 'FACTO Ready — Inversión Protegida',
+      description: 'Cuando FACTO les otorgue acceso a su API, la integración será inmediata. No tendrán que pagar por un desarrollo adicional ni modificar nada de lo que estamos construyendo. Esto protege su inversión y asegura que el sistema evolucione junto con las necesidades del negocio.',
+    },
+  ],
+  marketing: [],
+  mockups: [],
+  tags: ['e-commerce', 'pet-shop', 'multi-sucursal', 'FACTO', 'Rancagua', 'Machalí'],
   commercial: {
-    total: "16.0 UF + IVA",
-    time: "30 días de corrido para la entrega llave en mano.",
+    total: '10 UF + IVA',
+    timeline: '25 días hábiles (12 días Fase 1 + 13 días Fase 2)',
     payment: [
-      "50% Inicial (8.0 UF + IVA): Formaliza el inicio del proyecto, diseño de la arquitectura de datos y despliegue del Core.",
-      "50% Final (8.0 UF + IVA): Contra entrega final, puesta en marcha en producción y capacitación básica de uso."
+      {
+        percentage: '50%',
+        description: 'Al inicio del proyecto',
+        amount: '5 UF',
+      },
+      {
+        percentage: '50%',
+        description: 'Contra entrega final',
+        amount: '5 UF',
+      },
     ],
-    warranty: "Pago aceptado mediante Tarjeta de Crédito. Facturación electrónica emitida por Orion Technology. Soporte técnico integral gratuito durante 6 meses ante cualquier anomalía de software."
-  }
+    intellectualProperty: 'El código fuente y la base de datos pertenecen al 100% a Maskota Center. Sin costos de licencia ni suscripciones obligatorias.',
+    warranty: '6 meses de soporte técnico integral gratuito ante cualquier anomalía de software. Incluye capacitación presencial del equipo en ambas sucursales. Aceptamos tarjeta de crédito y transferencia. Emitimos factura electrónica por el total del servicio.',
+  },
 };

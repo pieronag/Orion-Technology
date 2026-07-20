@@ -1,5 +1,6 @@
 import { getProposalPublicInfo } from '@/app/actions/proposals';
 import ProposalClient from './ProposalClient';
+import ProposalPublicView from './ProposalPublicView';
 
 export default async function ProposalPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
@@ -8,22 +9,33 @@ export default async function ProposalPage({ params }: { params: Promise<{ id: s
   if (!result.success) {
     if (result.error === 'expired') {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-[#09090b] text-white font-['Outfit']">
-          <div className="text-center max-w-md p-8 glass-panel border border-[rgba(255,255,255,0.1)] rounded-xl bg-[#18181b]/80 backdrop-blur-xl">
-            <h1 className="text-3xl font-bold mb-4 text-red-400">Propuesta Expirada</h1>
-            <p className="text-[#a1a1aa] mb-6">El enlace a esta propuesta ha superado su vigencia de 15 días y ya no se encuentra disponible por motivos de seguridad.</p>
-            <p className="text-sm font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#8b5cf6] to-[#22d3ee]">Orion Technology</p>
+        <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#fff" }}>
+          <div style={{ textAlign: "center", maxWidth: "400px", padding: "2.5rem" }}>
+            <h1 style={{ fontSize: "1.5rem", fontWeight: "800", marginBottom: "0.5rem" }}>Propuesta Expirada</h1>
+            <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", lineHeight: "1.6" }}>El enlace a esta propuesta ha superado su vigencia y ya no se encuentra disponible por motivos de seguridad.</p>
           </div>
         </div>
       );
     }
-    
+
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#09090b] text-white">
-        <h1 className="text-2xl font-bold">Propuesta no encontrada (404)</h1>
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <h1 style={{ fontSize: "1.5rem", fontWeight: "800" }}>Propuesta no encontrada</h1>
       </div>
     );
   }
 
-  return <ProposalClient proposalInfo={result.proposal!} />;
+  const p = result.proposal!;
+
+  // Si tiene allowPublicView, mostrar sin gate
+  if (p.allowPublicView && p.status !== 'accepted') {
+    return <ProposalPublicView proposalInfo={p} />;
+  }
+
+  // Si ya fue aceptada, mostrar directamente
+  if (p.status === 'accepted') {
+    return <ProposalPublicView proposalInfo={p} />;
+  }
+
+  return <ProposalClient proposalInfo={p} />;
 }

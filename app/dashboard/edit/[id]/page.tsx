@@ -1,35 +1,65 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
-import { updateProposal, getProposalAdminInfo } from '@/app/actions/proposals';
+import { updateProposal, getProposalAdminInfo, getProposalVersions, restoreProposalVersion, uploadProposalFile, saveInternalNote, saveAvatarUrl } from '@/app/actions/proposals';
 import { useRouter } from 'next/navigation';
-import { Sparkles, KeyRound, User, FileText, Plus, Trash2, Settings, MonitorSmartphone, Code, DollarSign } from 'lucide-react';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
+import { defaultProposalTemplate } from '@/lib/proposal-template';
+import { isOldFormat, migrateOldFormat, parseUF, sumModulesUF, sumPayments, autoLabel } from '@/lib/proposal-helpers';
+import type { ProposalContent } from '@/lib/proposal-helpers';
+import MarkdownInput from '@/components/MarkdownInput';
+import {
+  Sparkles, KeyRound, User, FileText, Plus, Trash2, Settings, MonitorSmartphone, Code,
+  DollarSign, ShieldCheck, Image, BarChart3, GitCompare, Puzzle, ChevronDown, ChevronUp, Tag,
+  History, Upload, FileText as FileIcon, MessageSquare,
+} from 'lucide-react';
 
 export default function EditProposalPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const { id } = use(params);
-  
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [initialLoad, setInitialLoad] = useState(true);
-  
-  // Datos Generales
-  const [title, setTitle] = useState('');
-  const [clientName, setClientName] = useState('');
-  const [password, setPassword] = useState(''); // Opcional en edición
 
-  // Estructura de la Propuesta
-  const [data, setData] = useState<any>(null);
+  const [password, setPassword] = useState('');
+  const [data, setData] = useState<ProposalContent | null>(null);
+
+  const [showComparative, setShowComparative] = useState(false);
+  const [showIntegration, setShowIntegration] = useState(false);
+  const [showDifferentiators, setShowDifferentiators] = useState(false);
+  const [showMarketing, setShowMarketing] = useState(false);
+  const [showMockups, setShowMockups] = useState(false);
+  const [versions, setVersions] = useState<any[]>([]);
+  const [showVersions, setShowVersions] = useState(false);
+  const [internalNote, setInternalNote] = useState('');
+  const [files, setFiles] = useState<any[]>([]);
+  const [avatarUrl, setAvatarUrl] = useState('');
+
+  const set = (fn: (prev: ProposalContent) => ProposalContent) => setData((prev) => prev ? fn(prev) : prev);
 
   useEffect(() => {
     const fetchProposal = async () => {
       const res = await getProposalAdminInfo(id);
       if (res.success && res.proposal) {
-        setTitle(res.proposal.title);
-        setClientName(res.proposal.clientName);
+        setFiles(res.proposal.files || []);
+        setInternalNote((res.proposal as any).internalNote || '');
+        setAvatarUrl((res.proposal as any).avatarUrl || '');
         try {
-          setData(JSON.parse(res.proposal.content));
-        } catch(e) {
+          const parsed = JSON.parse(res.proposal.content);
+          if (isOldFormat(parsed)) {
+            const migrated = migrateOldFormat(parsed);
+            setData(migrated);
+          } else {
+            setData(parsed);
+          }
+          if (parsed.comparativeAnalysis) setShowComparative(true);
+          if (parsed.integration) setShowIntegration(true);
+          if (parsed.differentiators?.length) setShowDifferentiators(true);
+          if (parsed.marketing?.length) setShowMarketing(true);
+          if (parsed.mockups?.length) setShowMockups(true);
+        } catch {
           setError('El contenido de la propuesta está corrupto.');
         }
       } else {
@@ -48,62 +78,62 @@ export default function EditProposalPage({ params }: { params: Promise<{ id: str
     try {
       const result = await updateProposal(
         id,
-        {
-          title,
-          clientName,
-          content: JSON.stringify(data),
-        },
-        password // Si está vacío, updateProposal lo ignora y mantiene el antiguo
+        { title: data!.title, clientName: data!.clientName, content: JSON.stringify(data!) },
+        password,
       );
-
       if (result.success) {
-        router.push('/dashboard');
-        router.refresh();
-      } else {
-        setError(result.error || 'Error al actualizar la propuesta');
+        await saveInternalNote(id, internalNote);
+        await saveAvatarUrl(id, avatarUrl);
+        router.push('/dashboard'); router.refresh();
       }
-    } catch (e) {
-      setError('Error interno al compilar la propuesta.');
-    } finally {
-      setLoading(false);
-    }
+      else { setError(result.error || 'Error al actualizar la propuesta'); }
+    } catch { setError('Error interno al compilar la propuesta.'); }
+    finally { setLoading(false); }
+  };
+
+  const loadVersions = async () => {
+    const res = await getProposalVersions(id);
+    if (res.success) setVersions(res.versions || []);
+    setShowVersions(true);
+  };
+
+  const handleRestore = async (versionId: string) => {
+    const res = await restoreProposalVersion(id, versionId);
+    if (res.success) { router.refresh(); }
+    else { alert('Error al restaurar versión'); }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+      const base64 = (ev.target?.result as string)?.split(',')[1];
+      if (base64) {
+        const res = await uploadProposalFile(id, file.name, base64);
+        if (res.success) { setFiles(prev => [...prev, { name: res.name, url: res.url }]); }
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   if (initialLoad) return <div style={{ padding: "3rem", textAlign: "center" }}>Cargando propuesta...</div>;
   if (!data) return <div style={{ padding: "3rem", textAlign: "center", color: "red" }}>{error}</div>;
 
-  const inputStyle = {
-    width: "100%",
-    padding: "0.6rem 0.8rem",
-    background: "#ffffff",
-    border: "1px solid var(--glass-border)",
-    borderRadius: "6px",
-    color: "#0f172a",
-    fontSize: "0.9rem",
-    fontFamily: "inherit",
-    outline: "none",
-    transition: "border-color 0.3s ease",
-  };
-
-  const labelStyle = {
-    display: "flex", alignItems: "center", gap: "0.4rem", fontSize: "0.9rem", fontWeight: "700", color: "var(--text-muted)", marginBottom: "0.3rem"
-  };
-
-  const sectionHeaderStyle = {
-    fontSize: "1.2rem", fontWeight: "800", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem", borderBottom: "1px solid var(--glass-border)", paddingBottom: "0.8rem"
-  };
+  const inputStyle = { width: "100%", padding: "0.5rem 0.7rem", background: "#ffffff", border: "1px solid var(--glass-border)", borderRadius: "var(--radius-sm)", color: "#0f172a", fontSize: "0.85rem", fontFamily: "inherit" };
+  const labelStyle = { display: "flex", alignItems: "center", gap: "0.35rem", fontSize: "0.8rem", fontWeight: "700", color: "var(--text-muted)", marginBottom: "0.25rem" };
+  const sectionHeaderStyle = { fontSize: "1.1rem", fontWeight: "800", marginBottom: "0.7rem", display: "flex", alignItems: "center", gap: "0.5rem", borderBottom: "1px solid var(--glass-border)", paddingBottom: "0.6rem" };
 
   return (
     <div style={{ width: "100%" }}>
-      <style dangerouslySetInnerHTML={{__html: `
+      <style dangerouslySetInnerHTML={{ __html: `
         .action-btns { display: flex; justify-content: flex-end; gap: 1rem; }
         .dynamic-item { background: rgba(255,255,255,0.02); padding: 1.5rem; border-radius: 8px; border: 1px dashed var(--glass-border); margin-bottom: 1rem; position: relative; }
         .btn-icon { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #ef4444; border-radius: 6px; padding: 0.4rem; cursor: pointer; transition: 0.2s; }
         .btn-icon:hover { background: #ef4444; color: white; }
-        @media (max-width: 768px) {
-          .action-btns { flex-direction: column; width: 100%; }
-          .action-btns .btn { width: 100%; justify-content: center; }
-        }
+        .toggle-section { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.5rem 0; font-size: 0.9rem; color: var(--text-muted); font-weight: 600; transition: 0.2s; }
+        .toggle-section:hover { color: var(--text); }
+        @media (max-width: 768px) { .action-btns { flex-direction: column; width: 100%; } .action-btns .btn { width: 100%; justify-content: center; } }
       `}} />
       <div style={{ marginBottom: "3rem" }}>
         <h1 style={{ fontSize: "2.5rem", letterSpacing: "-0.03em", marginBottom: "0.5rem", display: "flex", alignItems: "center", gap: "1rem" }}>
@@ -112,15 +142,13 @@ export default function EditProposalPage({ params }: { params: Promise<{ id: str
         <p className="text-muted" style={{ fontSize: "1.1rem" }}>Modifica los datos y presiona actualizar.</p>
       </div>
 
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
-        
-        {/* BLOQUE 1 */}
+      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
         <div className="glass-panel" style={{ padding: "1.5rem" }}>
           <h2 style={sectionHeaderStyle}><Settings size={22} color="var(--primary)" /> Configuración Básica</h2>
           <div className="bento-grid">
             <div className="bento-col-6">
               <label style={labelStyle}><User size={16} /> Nombre del Cliente</label>
-              <input type="text" value={clientName} onChange={(e) => setClientName(e.target.value)} style={inputStyle} required />
+              <input type="text" value={data.clientName} onChange={(e) => set(p => ({ ...p, clientName: e.target.value }))} style={inputStyle} required />
             </div>
             <div className="bento-col-6">
               <label style={labelStyle}><KeyRound size={16} /> Contraseña de Acceso</label>
@@ -128,137 +156,305 @@ export default function EditProposalPage({ params }: { params: Promise<{ id: str
             </div>
             <div className="bento-col-12">
               <label style={labelStyle}><FileText size={16} /> Título de la Propuesta</label>
-              <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} style={inputStyle} required />
+              <input type="text" value={data.title} onChange={(e) => set(p => ({ ...p, title: e.target.value }))} style={inputStyle} required />
+            </div>
+            <div className="bento-col-12">
+              <label style={labelStyle}><FileText size={16} /> Subtítulo (opcional)</label>
+              <input type="text" value={data.subtitle} onChange={(e) => set(p => ({ ...p, subtitle: e.target.value }))} style={inputStyle} />
             </div>
           </div>
         </div>
 
-        {/* BLOQUE 2: INTRO */}
         <div className="glass-panel" style={{ padding: "1.5rem" }}>
-          <h2 style={sectionHeaderStyle}>Reseña e Introducción</h2>
-          <textarea value={data.intro} onChange={(e) => setData({...data, intro: e.target.value})} style={{ ...inputStyle, minHeight: "120px", resize: "vertical" }} required />
+          <h2 style={sectionHeaderStyle}><User size={22} color="var(--secondary)" /> Datos del Autor</h2>
+          <div className="bento-grid">
+            <div className="bento-col-6">
+              <label style={labelStyle}><User size={16} /> Nombre del Autor</label>
+              <input type="text" value={data.authorName} onChange={(e) => set(p => ({ ...p, authorName: e.target.value }))} style={inputStyle} />
+            </div>
+            <div className="bento-col-6">
+              <label style={labelStyle}><Code size={16} /> Cargo / Rol</label>
+              <input type="text" value={data.authorRole} onChange={(e) => set(p => ({ ...p, authorRole: e.target.value }))} style={inputStyle} />
+            </div>
+          </div>
         </div>
 
-        {/* BLOQUE 3: OBJETIVOS */}
+        {/* TAGS */}
+        <div className="glass-panel" style={{ padding: "1.5rem" }}>
+          <h2 style={sectionHeaderStyle}><Tag size={18} color="var(--secondary)" /> Etiquetas</h2>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem", marginBottom: "0.5rem" }}>
+            {(data.tags || []).map((tag, idx) => (
+              <span key={idx} style={{ display: "inline-flex", alignItems: "center", gap: "0.3rem", padding: "0.2rem 0.6rem", background: "var(--primary-glow)", border: "1px solid rgba(124,58,237,0.3)", borderRadius: "999px", fontSize: "0.75rem", fontWeight: "700", color: "var(--primary)" }}>
+                {tag}
+                <button type="button" onClick={() => set(p => ({ ...p, tags: p.tags.filter((_, i) => i !== idx) }))} style={{ background: "none", border: "none", color: "var(--primary)", cursor: "pointer", padding: 0, fontSize: "0.8rem", lineHeight: 1, opacity: 0.6 }}>×</button>
+              </span>
+            ))}
+          </div>
+          <input type="text" placeholder="Escribe y presiona Enter..." style={inputStyle} onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); const val = (e.target as HTMLInputElement).value.trim(); if (val && !(data.tags || []).includes(val)) { set(p => ({ ...p, tags: [...(p.tags || []), val] })); } (e.target as HTMLInputElement).value = ''; } }} />
+        </div>
+
+        <div className="glass-panel" style={{ padding: "1.5rem" }}>
+          <h2 style={sectionHeaderStyle}>Introducción y Objetivos</h2>
+          <MarkdownInput value={data.introObjectives} onChange={(val) => set(p => ({ ...p, introObjectives: val }))} style={inputStyle} minHeight="200px" />
+        </div>
+
         <div className="glass-panel" style={{ padding: "1.5rem" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
-            <h2 style={{ ...sectionHeaderStyle, borderBottom: "none", margin: 0, padding: 0 }}>Objetivos Estratégicos</h2>
-            <button type="button" onClick={() => setData({...data, objectives: [...data.objectives, {title: '', desc: ''}]})} className="btn" style={{ padding: "0.5rem 1rem", fontSize: "0.9rem", display: "flex", gap: "0.5rem", background: "rgba(255,255,255,0.05)" }}>
-              <Plus size={16} /> Añadir
-            </button>
+            <h2 style={{ ...sectionHeaderStyle, borderBottom: "none", margin: 0, padding: 0 }}><Code size={22} color="var(--primary)" /> Grupos de Desarrollo</h2>
+            <button type="button" onClick={() => set(p => ({ ...p, developmentGroups: [...p.developmentGroups, { title: '', description: '', modules: [], subtotal: '', timeline: '' }] }))} className="btn" style={{ padding: "0.5rem 1rem", fontSize: "0.9rem", display: "flex", gap: "0.5rem", background: "rgba(255,255,255,0.05)" }}><Plus size={16} /> Añadir Grupo</button>
           </div>
-          {data.objectives.map((obj: any, idx: number) => (
-            <div key={idx} className="dynamic-item bento-grid">
-              <div className="bento-col-12" style={{ display: "flex", justifyContent: "space-between" }}>
-                <input type="text" value={obj.title} placeholder="Título del objetivo" style={{ ...inputStyle, fontWeight: "bold" }} required onChange={(e) => { const newObj = [...data.objectives]; newObj[idx].title = e.target.value; setData({...data, objectives: newObj}); }} />
-                <button type="button" onClick={() => { setData({...data, objectives: data.objectives.filter((_:any, i:number) => i !== idx)}); }} className="btn-icon" style={{ marginLeft: "1rem" }}><Trash2 size={18} /></button>
+          {data.developmentGroups.map((group, gIdx) => {
+            const calcSubtotal = sumModulesUF(group.modules);
+            return (
+              <div key={gIdx} className="dynamic-item" style={{ borderColor: "var(--primary)" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
+                  <h3 style={{ fontSize: "1.1rem", fontWeight: "700", margin: 0 }}>Grupo {gIdx + 1}</h3>
+                  <button type="button" onClick={() => set(p => ({ ...p, developmentGroups: p.developmentGroups.filter((_, i) => i !== gIdx) }))} className="btn-icon"><Trash2 size={18} /></button>
+                </div>
+                <div className="bento-grid" style={{ marginBottom: "1rem" }}>
+                  <div className="bento-col-8">
+                    <label style={labelStyle}>Título del Grupo</label>
+                    <input type="text" value={group.title} onChange={(e) => set(p => { const g = [...p.developmentGroups]; g[gIdx] = { ...g[gIdx], title: e.target.value }; return { ...p, developmentGroups: g }; })} style={inputStyle} />
+                  </div>
+                  <div className="bento-col-2">
+                    <label style={labelStyle}>Subtotal (UF)</label>
+                    <input type="text" value={calcSubtotal ? `${calcSubtotal.toFixed(1)} UF` : group.subtotal} onChange={(e) => set(p => { const g = [...p.developmentGroups]; g[gIdx] = { ...g[gIdx], subtotal: e.target.value }; return { ...p, developmentGroups: g }; })} style={{ ...inputStyle, fontWeight: "700", color: "#10b981" }} />
+                  </div>
+                  <div className="bento-col-2">
+                    <label style={labelStyle}>Timeline</label>
+                    <input type="text" value={group.timeline} onChange={(e) => set(p => { const g = [...p.developmentGroups]; g[gIdx] = { ...g[gIdx], timeline: e.target.value }; return { ...p, developmentGroups: g }; })} style={inputStyle} />
+                  </div>
+                  <div className="bento-col-12">
+                    <label style={labelStyle}>Descripción del Grupo</label>
+                    <textarea value={group.description} onChange={(e) => set(p => { const g = [...p.developmentGroups]; g[gIdx] = { ...g[gIdx], description: e.target.value }; return { ...p, developmentGroups: g }; })} style={{ ...inputStyle, minHeight: "80px", resize: "vertical" }} />
+                  </div>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem", paddingTop: "1rem", borderTop: "1px solid var(--glass-border)" }}>
+                  <h4 style={{ fontSize: "1rem", fontWeight: "700", margin: 0 }}>Módulos</h4>
+                  <button type="button" onClick={() => set(p => { const g = [...p.developmentGroups]; g[gIdx] = { ...g[gIdx], modules: [...g[gIdx].modules, { name: '', description: '', investment: '' }] }; return { ...p, developmentGroups: g }; })} className="btn" style={{ padding: "0.3rem 0.6rem", fontSize: "0.8rem", background: "rgba(255,255,255,0.05)" }}><Plus size={14} /> Añadir Módulo</button>
+                </div>
+                {group.modules.map((mod, mIdx) => (
+                  <div key={mIdx} className="dynamic-item" style={{ marginLeft: "1rem" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
+                      <span style={{ fontSize: "0.85rem", fontWeight: "700", color: "var(--text-muted)" }}>Módulo {mIdx + 1}</span>
+                      <button type="button" onClick={() => set(p => { const g = [...p.developmentGroups]; g[gIdx] = { ...g[gIdx], modules: g[gIdx].modules.filter((_, i) => i !== mIdx) }; return { ...p, developmentGroups: g }; })} className="btn-icon" style={{ padding: "0.3rem" }}><Trash2 size={14} /></button>
+                    </div>
+                    <div className="bento-grid">
+                      <div className="bento-col-5">
+                        <label style={{ ...labelStyle, fontSize: "0.8rem" }}>Nombre del Módulo</label>
+                        <input type="text" value={mod.name} onChange={(e) => set(p => { const g = [...p.developmentGroups]; g[gIdx] = { ...g[gIdx], modules: g[gIdx].modules.map((m, i) => i === mIdx ? { ...m, name: e.target.value } : m) }; return { ...p, developmentGroups: g }; })} style={inputStyle} />
+                      </div>
+                      <div className="bento-col-4">
+                        <label style={{ ...labelStyle, fontSize: "0.8rem" }}>Descripción</label>
+                        <textarea value={mod.description} onChange={(e) => set(p => { const g = [...p.developmentGroups]; g[gIdx] = { ...g[gIdx], modules: g[gIdx].modules.map((m, i) => i === mIdx ? { ...m, description: e.target.value } : m) }; return { ...p, developmentGroups: g }; })} style={{ ...inputStyle, minHeight: "60px", resize: "vertical" }} />
+                      </div>
+                      <div className="bento-col-3">
+                        <label style={{ ...labelStyle, fontSize: "0.8rem" }}>Inversión (UF)</label>
+                        <input type="text" value={mod.investment} onChange={(e) => set(p => { const g = [...p.developmentGroups]; g[gIdx] = { ...g[gIdx], modules: g[gIdx].modules.map((m, i) => i === mIdx ? { ...m, investment: e.target.value } : m) }; return { ...p, developmentGroups: g }; })} style={{ ...inputStyle, fontWeight: "700", color: "#10b981" }} />
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
-              <div className="bento-col-12">
-                <textarea value={obj.desc} placeholder="Descripción" style={{ ...inputStyle, minHeight: "80px" }} required onChange={(e) => { const newObj = [...data.objectives]; newObj[idx].desc = e.target.value; setData({...data, objectives: newObj}); }} />
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
-        {/* BLOQUE 4: DESARROLLO (WEB) */}
         <div className="glass-panel" style={{ padding: "1.5rem" }}>
-          <h2 style={sectionHeaderStyle}><MonitorSmartphone size={22} color="var(--secondary)" /> Fase 1: Desarrollo Web</h2>
-          <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginBottom: "2rem" }}>
-            <input type="text" value={data.development?.web?.title || ''} onChange={(e) => setData({...data, development: {...data.development, web: {...data.development.web, title: e.target.value}}})} style={{ ...inputStyle, fontWeight: "bold" }} required />
-            <textarea value={data.development?.web?.desc || ''} onChange={(e) => setData({...data, development: {...data.development, web: {...data.development.web, desc: e.target.value}}})} style={{ ...inputStyle, minHeight: "80px" }} required />
+          <div className="toggle-section" onClick={() => setShowComparative(!showComparative)}>
+            <GitCompare size={18} color="var(--secondary)" />
+            {showComparative ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            Análisis Comparativo {showComparative ? '(visible)' : '(opcional)'}
           </div>
-
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-            <h3 style={{ fontSize: "1.1rem", fontWeight: "700" }}>Características de la Web</h3>
-            <button type="button" onClick={() => setData({...data, development: {...data.development, web: {...data.development.web, items: [...(data.development?.web?.items || []), {title: '', desc: ''}]}}})} className="btn" style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem", background: "rgba(255,255,255,0.05)" }}><Plus size={14} /> Añadir Item</button>
-          </div>
-          
-          {(data.development?.web?.items || []).map((item: any, idx: number) => (
-            <div key={idx} className="dynamic-item" style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-              <div style={{ display: "flex", gap: "1rem" }}>
-                <input type="text" value={item.title} placeholder="Característica" style={{ ...inputStyle, fontWeight: "bold" }} required onChange={(e) => {
-                  const newItems = [...data.development.web.items]; newItems[idx].title = e.target.value; setData({...data, development: {...data.development, web: {...data.development.web, items: newItems}}});
-                }} />
-                <button type="button" onClick={() => {
-                  const newItems = data.development.web.items.filter((_:any, i:number) => i !== idx); setData({...data, development: {...data.development, web: {...data.development.web, items: newItems}}});
-                }} className="btn-icon"><Trash2 size={16} /></button>
-              </div>
-              <textarea value={item.desc} placeholder="Descripción" style={{ ...inputStyle, minHeight: "60px" }} required onChange={(e) => {
-                const newItems = [...data.development.web.items]; newItems[idx].desc = e.target.value; setData({...data, development: {...data.development, web: {...data.development.web, items: newItems}}});
-              }} />
+          {showComparative && (
+            <div style={{ marginTop: "1rem" }}>
+              <textarea value={data.comparativeAnalysis} onChange={(e) => set(p => ({ ...p, comparativeAnalysis: e.target.value }))} style={{ ...inputStyle, minHeight: "150px", resize: "vertical" }} />
             </div>
-          ))}
+          )}
         </div>
 
-        {/* BLOQUE 5: DESARROLLO (SISTEMA) */}
         <div className="glass-panel" style={{ padding: "1.5rem" }}>
-          <h2 style={sectionHeaderStyle}><Code size={22} color="var(--primary)" /> Fase 2: Desarrollo del Sistema</h2>
-          <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginBottom: "2rem" }}>
-            <input type="text" value={data.development?.system?.title || ''} onChange={(e) => setData({...data, development: {...data.development, system: {...data.development.system, title: e.target.value}}})} style={{ ...inputStyle, fontWeight: "bold" }} required />
-            <textarea value={data.development?.system?.desc || ''} onChange={(e) => setData({...data, development: {...data.development, system: {...data.development.system, desc: e.target.value}}})} style={{ ...inputStyle, minHeight: "80px" }} required />
+          <div className="toggle-section" onClick={() => setShowIntegration(!showIntegration)}>
+            <Puzzle size={18} color="var(--primary)" />
+            {showIntegration ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            Análisis de Integración {showIntegration ? '(visible)' : '(opcional)'}
           </div>
-
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-            <h3 style={{ fontSize: "1.1rem", fontWeight: "700" }}>Módulos del Sistema</h3>
-            <button type="button" onClick={() => setData({...data, development: {...data.development, system: {...data.development.system, items: [...(data.development?.system?.items || []), {title: '', desc: ''}]}}})} className="btn" style={{ padding: "0.4rem 0.8rem", fontSize: "0.85rem", background: "rgba(255,255,255,0.05)" }}><Plus size={14} /> Añadir Módulo</button>
-          </div>
-          
-          {(data.development?.system?.items || []).map((item: any, idx: number) => (
-            <div key={idx} className="dynamic-item" style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-              <div style={{ display: "flex", gap: "1rem" }}>
-                <input type="text" value={item.title} placeholder="Nombre del módulo" style={{ ...inputStyle, fontWeight: "bold" }} required onChange={(e) => {
-                  const newItems = [...data.development.system.items]; newItems[idx].title = e.target.value; setData({...data, development: {...data.development, system: {...data.development.system, items: newItems}}});
-                }} />
-                <button type="button" onClick={() => {
-                  const newItems = data.development.system.items.filter((_:any, i:number) => i !== idx); setData({...data, development: {...data.development, system: {...data.development.system, items: newItems}}});
-                }} className="btn-icon"><Trash2 size={16} /></button>
-              </div>
-              <textarea value={item.desc} placeholder="Descripción" style={{ ...inputStyle, minHeight: "60px" }} required onChange={(e) => {
-                const newItems = [...data.development.system.items]; newItems[idx].desc = e.target.value; setData({...data, development: {...data.development, system: {...data.development.system, items: newItems}}});
-              }} />
+          {showIntegration && (
+            <div style={{ marginTop: "1rem" }}>
+              <textarea value={data.integration} onChange={(e) => set(p => ({ ...p, integration: e.target.value }))} style={{ ...inputStyle, minHeight: "150px", resize: "vertical" }} />
             </div>
-          ))}
+          )}
         </div>
 
-        {/* BLOQUE 6: INTEGRACIÓN */}
         <div className="glass-panel" style={{ padding: "1.5rem" }}>
-          <h2 style={sectionHeaderStyle}>Análisis de la Integración</h2>
-          <textarea value={data.integration} onChange={(e) => setData({...data, integration: e.target.value})} style={{ ...inputStyle, minHeight: "120px", resize: "vertical" }} required />
+          <div className="toggle-section" onClick={() => setShowDifferentiators(!showDifferentiators)}>
+            <Sparkles size={18} color="#f59e0b" />
+            {showDifferentiators ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            Valor Agregado / Diferenciadores {showDifferentiators ? '(visible)' : '(opcional)'}
+          </div>
+          {showDifferentiators && (
+            <div style={{ marginTop: "1rem" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+                <span style={{ fontSize: "0.95rem", fontWeight: "600", color: "var(--text-muted)" }}>Items diferenciadores (A, B, C...)</span>
+                <button type="button" onClick={() => set(p => ({ ...p, differentiators: [...p.differentiators, { label: autoLabel(p.differentiators.length), title: '', description: '' }] }))} className="btn" style={{ padding: "0.3rem 0.6rem", fontSize: "0.8rem", background: "rgba(255,255,255,0.05)" }}><Plus size={14} /> Añadir</button>
+              </div>
+              {data.differentiators.map((diff, idx) => (
+                <div key={idx} className="dynamic-item" style={{ borderLeft: "4px solid #f59e0b" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                    <span style={{ fontWeight: "900", fontSize: "1.2rem", color: "#f59e0b" }}>{diff.label}</span>
+                    <button type="button" onClick={() => set(p => ({ ...p, differentiators: p.differentiators.filter((_, i) => i !== idx) }))} className="btn-icon" style={{ padding: "0.3rem" }}><Trash2 size={14} /></button>
+                  </div>
+                  <div className="bento-grid">
+                    <div className="bento-col-6"><label style={{ ...labelStyle, fontSize: "0.8rem" }}>Título</label><input type="text" value={diff.title} onChange={(e) => set(p => { const d = [...p.differentiators]; d[idx] = { ...d[idx], title: e.target.value }; return { ...p, differentiators: d }; })} style={inputStyle} /></div>
+                    <div className="bento-col-12"><label style={{ ...labelStyle, fontSize: "0.8rem" }}>Descripción</label><textarea value={diff.description} onChange={(e) => set(p => { const d = [...p.differentiators]; d[idx] = { ...d[idx], description: e.target.value }; return { ...p, differentiators: d }; })} style={{ ...inputStyle, minHeight: "80px", resize: "vertical" }} /></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* BLOQUE 7: COMERCIAL */}
+        <div className="glass-panel" style={{ padding: "1.5rem" }}>
+          <div className="toggle-section" onClick={() => setShowMarketing(!showMarketing)}>
+            <BarChart3 size={18} color="#3b82f6" />
+            {showMarketing ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            Estrategia de Marketing {showMarketing ? '(visible)' : '(opcional)'}
+          </div>
+          {showMarketing && (
+            <div style={{ marginTop: "1rem" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+                <span style={{ fontSize: "0.95rem", fontWeight: "600", color: "var(--text-muted)" }}>Planes mensuales</span>
+                <button type="button" onClick={() => set(p => ({ ...p, marketing: [...p.marketing, { name: '', description: '', investment: '' }] }))} className="btn" style={{ padding: "0.3rem 0.6rem", fontSize: "0.8rem", background: "rgba(255,255,255,0.05)" }}><Plus size={14} /> Añadir Plan</button>
+              </div>
+              {data.marketing.map((mkt, idx) => (
+                <div key={idx} className="dynamic-item" style={{ borderLeft: "4px solid #3b82f6" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                    <span style={{ fontSize: "0.85rem", fontWeight: "700", color: "var(--text-muted)" }}>Plan {idx + 1}</span>
+                    <button type="button" onClick={() => set(p => ({ ...p, marketing: p.marketing.filter((_, i) => i !== idx) }))} className="btn-icon" style={{ padding: "0.3rem" }}><Trash2 size={14} /></button>
+                  </div>
+                  <div className="bento-grid">
+                    <div className="bento-col-4"><label style={{ ...labelStyle, fontSize: "0.8rem" }}>Nombre del Plan</label><input type="text" value={mkt.name} onChange={(e) => set(p => { const m = [...p.marketing]; m[idx] = { ...m[idx], name: e.target.value }; return { ...p, marketing: m }; })} style={inputStyle} /></div>
+                    <div className="bento-col-5"><label style={{ ...labelStyle, fontSize: "0.8rem" }}>Descripción</label><textarea value={mkt.description} onChange={(e) => set(p => { const m = [...p.marketing]; m[idx] = { ...m[idx], description: e.target.value }; return { ...p, marketing: m }; })} style={{ ...inputStyle, minHeight: "60px", resize: "vertical" }} /></div>
+                    <div className="bento-col-3"><label style={{ ...labelStyle, fontSize: "0.8rem" }}>Inversión Mensual</label><input type="text" value={mkt.investment} onChange={(e) => set(p => { const m = [...p.marketing]; m[idx] = { ...m[idx], investment: e.target.value }; return { ...p, marketing: m }; })} style={{ ...inputStyle, fontWeight: "700", color: "#10b981" }} placeholder="ej: 1 UF/mes" /></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="glass-panel" style={{ padding: "1.5rem" }}>
+          <div className="toggle-section" onClick={() => setShowMockups(!showMockups)}>
+            <Image size={18} color="#8b5cf6" />
+            {showMockups ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            Mockups / Imágenes de Referencia {showMockups ? '(visible)' : '(opcional)'}
+          </div>
+          {showMockups && (
+            <div style={{ marginTop: "1rem" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+                <span style={{ fontSize: "0.95rem", fontWeight: "600", color: "var(--text-muted)" }}>Imágenes</span>
+                <button type="button" onClick={() => set(p => ({ ...p, mockups: [...p.mockups, { url: '', caption: '' }] }))} className="btn" style={{ padding: "0.3rem 0.6rem", fontSize: "0.8rem", background: "rgba(255,255,255,0.05)" }}><Plus size={14} /> Añadir Imagen</button>
+              </div>
+              {data.mockups.map((mock, idx) => (
+                <div key={idx} className="dynamic-item" style={{ borderLeft: "4px solid #8b5cf6" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
+                    <span style={{ fontSize: "0.85rem", fontWeight: "700", color: "var(--text-muted)" }}>Imagen {idx + 1}</span>
+                    <button type="button" onClick={() => set(p => ({ ...p, mockups: p.mockups.filter((_, i) => i !== idx) }))} className="btn-icon" style={{ padding: "0.3rem" }}><Trash2 size={14} /></button>
+                  </div>
+                  <div className="bento-grid">
+                    <div className="bento-col-8"><label style={{ ...labelStyle, fontSize: "0.8rem" }}>URL de la Imagen</label><input type="text" value={mock.url} onChange={(e) => set(p => { const m = [...p.mockups]; m[idx] = { ...m[idx], url: e.target.value }; return { ...p, mockups: m }; })} style={inputStyle} placeholder="https://..." /></div>
+                    <div className="bento-col-4"><label style={{ ...labelStyle, fontSize: "0.8rem" }}>Pie de Foto</label><input type="text" value={mock.caption} onChange={(e) => set(p => { const m = [...p.mockups]; m[idx] = { ...m[idx], caption: e.target.value }; return { ...p, mockups: m }; })} style={inputStyle} /></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
         <div className="glass-panel" style={{ padding: "1.5rem" }}>
           <h2 style={sectionHeaderStyle}><DollarSign size={22} color="#10b981" /> Condiciones Comerciales</h2>
           <div className="bento-grid">
-            <div className="bento-col-6">
+            <div className="bento-col-4">
               <label style={labelStyle}>Inversión Total</label>
-              <input type="text" value={data.commercial?.total || ''} onChange={(e) => setData({...data, commercial: {...data.commercial, total: e.target.value}})} style={{ ...inputStyle, color: "#10b981", fontWeight: "900", fontSize: "1.2rem" }} required />
+              <input type="text" value={data.commercial.total} onChange={(e) => set(p => ({ ...p, commercial: { ...p.commercial, total: e.target.value } }))} style={{ ...inputStyle, color: "#10b981", fontWeight: "900", fontSize: "1.2rem" }} required />
             </div>
-            <div className="bento-col-6">
+            <div className="bento-col-4">
               <label style={labelStyle}>Plazo de Ejecución</label>
-              <input type="text" value={data.commercial?.time || ''} onChange={(e) => setData({...data, commercial: {...data.commercial, time: e.target.value}})} style={inputStyle} required />
+              <input type="text" value={data.commercial.timeline} onChange={(e) => set(p => ({ ...p, commercial: { ...p.commercial, timeline: e.target.value } }))} style={inputStyle} required />
+            </div>
+            <div className="bento-col-4">
+              <label style={labelStyle}>Total Pagos</label>
+              <input type="text" value={sumPayments(data.commercial.payment) || '—'} readOnly style={{ ...inputStyle, fontWeight: "700", color: "var(--text-muted)" }} />
             </div>
             <div className="bento-col-12" style={{ marginTop: "1rem" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
                 <label style={{ ...labelStyle, margin: 0 }}>Esquema de Pago</label>
-                <button type="button" onClick={() => setData({...data, commercial: {...data.commercial, payment: [...(data.commercial?.payment || []), '']}})} className="btn" style={{ padding: "0.3rem 0.6rem", fontSize: "0.8rem", background: "rgba(255,255,255,0.05)" }}><Plus size={14} /></button>
+                <button type="button" onClick={() => set(p => ({ ...p, commercial: { ...p.commercial, payment: [...p.commercial.payment, { percentage: '', description: '', amount: '' }] } }))} className="btn" style={{ padding: "0.3rem 0.6rem", fontSize: "0.8rem", background: "rgba(255,255,255,0.05)" }}><Plus size={14} /> Añadir Pago</button>
               </div>
-              {(data.commercial?.payment || []).map((pay: string, idx: number) => (
-                <div key={idx} style={{ display: "flex", gap: "0.5rem", marginBottom: "0.5rem" }}>
-                  <input type="text" value={pay} onChange={(e) => {
-                    const newPays = [...data.commercial.payment]; newPays[idx] = e.target.value; setData({...data, commercial: {...data.commercial, payment: newPays}});
-                  }} style={inputStyle} required />
-                  <button type="button" onClick={() => {
-                    const newPays = data.commercial.payment.filter((_:any, i:number) => i !== idx); setData({...data, commercial: {...data.commercial, payment: newPays}});
-                  }} className="btn-icon" style={{ padding: "0.8rem" }}><Trash2 size={16} /></button>
+              {data.commercial.payment.map((pay, idx) => (
+                <div key={idx} className="dynamic-item" style={{ padding: "1rem" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
+                    <span style={{ fontSize: "0.85rem", fontWeight: "700", color: "var(--text-muted)" }}>Pago {idx + 1}</span>
+                    <button type="button" onClick={() => set(p => ({ ...p, commercial: { ...p.commercial, payment: p.commercial.payment.filter((_, i) => i !== idx) } }))} className="btn-icon" style={{ padding: "0.3rem" }}><Trash2 size={14} /></button>
+                  </div>
+                  <div className="bento-grid">
+                    <div className="bento-col-2"><label style={{ ...labelStyle, fontSize: "0.8rem" }}>%</label><input type="text" value={pay.percentage} onChange={(e) => set(p => { const pm = [...p.commercial.payment]; pm[idx] = { ...pm[idx], percentage: e.target.value }; return { ...p, commercial: { ...p.commercial, payment: pm } }; })} style={inputStyle} placeholder="50%" /></div>
+                    <div className="bento-col-7"><label style={{ ...labelStyle, fontSize: "0.8rem" }}>Descripción</label><input type="text" value={pay.description} onChange={(e) => set(p => { const pm = [...p.commercial.payment]; pm[idx] = { ...pm[idx], description: e.target.value }; return { ...p, commercial: { ...p.commercial, payment: pm } }; })} style={inputStyle} /></div>
+                    <div className="bento-col-3"><label style={{ ...labelStyle, fontSize: "0.8rem" }}>Monto</label><input type="text" value={pay.amount} onChange={(e) => set(p => { const pm = [...p.commercial.payment]; pm[idx] = { ...pm[idx], amount: e.target.value }; return { ...p, commercial: { ...p.commercial, payment: pm } }; })} style={{ ...inputStyle, fontWeight: "700" }} placeholder="6.5 UF" /></div>
+                  </div>
                 </div>
               ))}
             </div>
             <div className="bento-col-12" style={{ marginTop: "1rem" }}>
+              <label style={labelStyle}>Propiedad Intelectual</label>
+              <textarea value={data.commercial.intellectualProperty} onChange={(e) => set(p => ({ ...p, commercial: { ...p.commercial, intellectualProperty: e.target.value } }))} style={{ ...inputStyle, minHeight: "60px", resize: "vertical" }} />
+            </div>
+            <div className="bento-col-12">
               <label style={labelStyle}>Facilidades y Garantía</label>
-              <textarea value={data.commercial?.warranty || ''} onChange={(e) => setData({...data, commercial: {...data.commercial, warranty: e.target.value}})} style={{ ...inputStyle, minHeight: "80px" }} required />
+              <textarea value={data.commercial.warranty} onChange={(e) => set(p => ({ ...p, commercial: { ...p.commercial, warranty: e.target.value } }))} style={{ ...inputStyle, minHeight: "60px", resize: "vertical" }} />
             </div>
           </div>
+        </div>
+
+        {/* Archivos Adjuntos */}
+        <div className="glass-panel" style={{ padding: "1.5rem" }}>
+          <h2 style={sectionHeaderStyle}><Upload size={18} color="var(--primary)" /> Archivos Adjuntos</h2>
+          {files.length > 0 && (
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem", marginBottom: "0.75rem" }}>
+              {files.map((f: any, idx: number) => (
+                <div key={idx} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.4rem 0.6rem", background: "var(--bg-accent)", borderRadius: "var(--radius-sm)" }}>
+                  <span style={{ fontSize: "0.8rem", fontWeight: "600" }}><FileIcon size={14} style={{ marginRight: "0.3rem" }} />{f.name}</span>
+                  <a href={f.url} target="_blank" rel="noreferrer" style={{ fontSize: "0.75rem", color: "var(--primary)", fontWeight: "700", textDecoration: "none" }}>Ver</a>
+                </div>
+              ))}
+            </div>
+          )}
+          <input type="file" onChange={handleFileUpload} style={{ fontSize: "0.8rem" }} />
+        </div>
+
+        {/* Nota Interna */}
+        <div className="glass-panel" style={{ padding: "1.5rem" }}>
+          <h2 style={sectionHeaderStyle}><MessageSquare size={18} color="var(--secondary)" /> Nota Interna (solo visible para ti)</h2>
+          <textarea value={internalNote} onChange={(e) => setInternalNote(e.target.value)} style={{ ...inputStyle, minHeight: "80px", resize: "vertical" }} placeholder="Escribe notas privadas sobre esta propuesta..." />
+        </div>
+
+        {/* Versiones */}
+        <div className="glass-panel" style={{ padding: "1.5rem" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <h2 style={{ ...sectionHeaderStyle, margin: 0, padding: 0, border: "none" }}><History size={18} color="var(--primary)" /> Historial de Versiones</h2>
+            <button type="button" onClick={loadVersions} className="btn btn-outline btn-sm">Ver versiones</button>
+          </div>
+          {showVersions && (
+            <div style={{ marginTop: "1rem" }}>
+              {versions.length === 0 && <p style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>Sin versiones anteriores.</p>}
+              {versions.map((v: any) => (
+                <div key={v.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.5rem 0.7rem", background: "var(--bg-accent)", borderRadius: "var(--radius-sm)", marginBottom: "0.35rem" }}>
+                  <span style={{ fontSize: "0.8rem", fontWeight: "600" }}>Versión del {v.savedAt ? format(new Date(v.savedAt), "d MMM yyyy HH:mm", { locale: es }) : '—'}</span>
+                  <button type="button" onClick={() => handleRestore(v.id)} className="btn btn-outline btn-sm" style={{ fontSize: "0.7rem" }}>Restaurar</button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {error && (
@@ -269,7 +465,9 @@ export default function EditProposalPage({ params }: { params: Promise<{ id: str
 
         <div className="action-btns" style={{ marginTop: "1rem" }}>
           <button type="button" onClick={() => router.push('/dashboard')} className="btn btn-outline" style={{ padding: "1rem 2rem" }}>Cancelar</button>
-          <button type="submit" disabled={loading} className="btn btn-primary" style={{ padding: "1rem 2rem", border: "none" }}>{loading ? 'Actualizando...' : 'Actualizar Propuesta'}</button>
+          <button type="submit" disabled={loading} className="btn btn-primary" style={{ padding: "1rem 2rem", border: "none" }}>
+            {loading ? 'Actualizando...' : 'Actualizar Propuesta'}
+          </button>
         </div>
       </form>
     </div>

@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Edit2, Trash2 } from 'lucide-react';
-import { deleteProposal } from '@/app/actions/proposals';
+import { Edit2, Trash2, Copy } from 'lucide-react';
+import { deleteProposal, duplicateProposal } from '@/app/actions/proposals';
 
 export default function ProposalActions({ id }: { id: string }) {
   const router = useRouter();
@@ -34,6 +34,17 @@ export default function ProposalActions({ id }: { id: string }) {
         >
           <Edit2 size={16} />
         </Link>
+        <button 
+          onClick={async () => {
+            const res = await duplicateProposal(id);
+            if (res.success) router.refresh();
+            else alert(res.error || 'Error al duplicar');
+          }}
+          style={{ background: "rgba(59, 130, 246, 0.1)", padding: "0.5rem", borderRadius: "6px", color: "#3b82f6", border: "none", cursor: "pointer", transition: "0.2s" }}
+          title="Duplicar"
+        >
+          <Copy size={16} />
+        </button>
         <button 
           onClick={() => setShowModal(true)}
           style={{ background: "rgba(239, 68, 68, 0.1)", padding: "0.5rem", borderRadius: "6px", color: "#ef4444", border: "none", cursor: "pointer", transition: "0.2s" }}

@@ -33,3 +33,8 @@ export const getAuth = () => {
   getFirebaseAdminApp();
   return admin.auth();
 };
+
+export const getStorage = () => {
+  getFirebaseAdminApp();
+  return admin.storage();
+};
