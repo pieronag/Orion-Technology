@@ -5,7 +5,7 @@ import { getProposals } from '@/app/actions/proposals';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { ExternalLink, Clock, CheckCircle2, Eye, Search, Copy, Check, AlertTriangle, Tag, Columns, List, Share2, Download, Mail, Unlock } from 'lucide-react';
+import { ExternalLink, Clock, CheckCircle2, Eye, Search, Copy, Check, AlertTriangle, Tag, Columns, List, Share2, Download, Mail } from 'lucide-react';
 import ProposalActions from '@/components/ProposalActions';
 import KanbanBoard from '@/components/KanbanBoard';
 import AnalyticsPanel from '@/components/AnalyticsPanel';
@@ -43,7 +43,7 @@ export default function DashboardPage() {
       setLoading(false);
     };
     fetchData();
-    const interval = setInterval(fetchData, 60000);
+    const interval = setInterval(fetchData, 5000);
     return () => clearInterval(interval);
   }, []);
 
@@ -115,6 +115,9 @@ export default function DashboardPage() {
             <div style={{ display: "flex", gap: "0.25rem", background: "var(--bg-accent)", padding: "0.2rem", borderRadius: "var(--radius-sm)" }}>
               <button onClick={() => setViewMode('list')} className="btn-icon" style={{ background: viewMode === 'list' ? 'var(--bg)' : 'transparent', boxShadow: viewMode === 'list' ? '0 1px 4px rgba(0,0,0,0.1)' : 'none' }} title="Vista Lista"><List size={16} /></button>
               <button onClick={() => setViewMode('kanban')} className="btn-icon" style={{ background: viewMode === 'kanban' ? 'var(--bg)' : 'transparent', boxShadow: viewMode === 'kanban' ? '0 1px 4px rgba(0,0,0,0.1)' : 'none' }} title="Vista Kanban"><Columns size={16} /></button>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.3rem", fontSize: "0.65rem", fontWeight: "700", color: "#10b981" }}>
+              <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#10b981", boxShadow: "0 0 6px #10b981" }}></span> En vivo
             </div>
             <button onClick={exportCSV} className="btn btn-outline btn-sm" style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}><Download size={14} /> CSV</button>
             <Link href="/dashboard/new" className="btn btn-primary">Nueva Propuesta</Link>

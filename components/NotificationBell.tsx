@@ -19,7 +19,7 @@ export default function NotificationBell() {
       if (res.success && res.notifications) setNotifications(res.notifications as any[]);
     };
     fetch();
-    const interval = setInterval(fetch, 30000);
+    const interval = setInterval(fetch, 5000);
     return () => clearInterval(interval);
   }, []);
 
