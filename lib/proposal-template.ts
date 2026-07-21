@@ -4,15 +4,15 @@ export const defaultProposalTemplate: ProposalContent = {
   authorName: 'Piero Abarca',
   authorRole: 'Arquitecto de Software y Desarrollador Fullstack',
   title: 'Transformación Digital: Ecosistema E-commerce y Sistema de Gestión Retail Multi-Sucursal',
-  subtitle: 'Migración a React, Centralización de Inventario en Rancagua y Machalí, Perfiles de Mascotas con Sugerencias Inteligentes, y Arquitectura Preparada para FACTO',
+  subtitle: 'Migración a React, Centralización de Inventario en Rancagua, Machalí y Graneros, Perfiles de Mascotas con Sugerencias Inteligentes, y Arquitectura Preparada para FACTO',
   clientName: 'Maskota Center',
   introObjectives: `Maskota Center ha construido una marca sólida en la Región de O'Higgins, consolidándose como un centro de bienestar para mascotas con presencia en Rancagua y Machalí. Sin embargo, su plataforma actual en WordPress con Elementor presenta limitaciones técnicas que frenan su crecimiento: velocidad de carga reducida, nula integración entre sus dos sucursales, y la imposibilidad de ofrecer una experiencia personalizada a sus clientes.
 
-La presente propuesta tiene como objetivo reemplazar por completo su sitio web actual por un ecosistema digital moderno construido en React y Next.js, complementado con un sistema de gestión retail que unifique la operación de ambas sucursales en tiempo real. Buscamos que la tecnología trabaje en segundo plano para que usted y su equipo puedan enfocarse en lo que mejor hacen: entregar amor y salud a las mascotas de la región.
+La presente propuesta tiene como objetivo reemplazar por completo su sitio web actual por un ecosistema digital moderno construido en React y Next.js, complementado con un sistema de gestión retail que unifique la operación de ambas sucursales en tiempo real. Actualmente cuentan con un catálogo de más de 60 productos de marcas reconocidas como Royal Canin, ProPlan, Acana, Natural Food, Dog Chow y muchas más, los cuales serán migrados manteniendo toda su información, precios, imágenes y variantes sin pérdida de datos. Buscamos que la tecnología trabaje en segundo plano para que usted y su equipo puedan enfocarse en lo que mejor hacen: entregar amor y salud a las mascotas de la región.
 
 **Objetivos del proyecto:**
 
-**Centralizar la operación dual:** Unificar Rancagua y Machalí en un solo sistema con stock independiente visible al instante, más transferencias ágiles entre locales.
+**Centralizar la operación multi-sucursal:** Unificar Rancagua, Machalí y Graneros en un solo sistema con stock independiente visible al instante, más transferencias ágiles entre locales.
 
 **Fidelizar mediante datos concretos:** Cada mascota registrada con su especie, raza, peso, edad y fotografía activará un motor de sugerencias que anticipa las necesidades del cliente y facilita la recompra.
 
@@ -26,7 +26,7 @@ La presente propuesta tiene como objetivo reemplazar por completo su sitio web a
       modules: [
         {
           name: 'Migración a React SPA',
-          description: 'Reemplazaremos completamente el sitio actual construido en WordPress y Elementor por una aplicación web moderna desarrollada en React con Next.js. Esto mejora drásticamente la velocidad de carga —pasando de recargas de página completas a una navegación instantánea— y sienta las bases técnicas para todas las funcionalidades posteriores. El catálogo de productos será dinámico y estará sincronizado en tiempo real con el inventario de ambas sucursales. Cada ficha de producto mostrará información detallada y el stock disponible en Rancagua y Machalí de forma separada. Los clientes podrán buscar productos por nombre, categoría, especie o raza, y el diseño será completamente responsivo, adaptándose perfectamente a celulares, tablets y computadores.',
+          description: 'Reemplazaremos completamente el sitio actual construido en WordPress y Elementor por una aplicación web moderna desarrollada en React con Next.js. Esto mejora drásticamente la velocidad de carga —pasando de recargas de página completas a una navegación instantánea— y sienta las bases técnicas para todas las funcionalidades posteriores. Incluye la migración completa del catálogo actual de WooCommerce (productos, categorías, precios, imágenes, variantes y stock) para que nada se pierda en la transición. El catálogo de productos será dinámico y estará sincronizado en tiempo real con el inventario de ambas sucursales. Cada ficha de producto mostrará información detallada y el stock disponible en Rancagua, Machalí y Graneros de forma separada. Los clientes podrán buscar productos por nombre, categoría, especie o raza, y el diseño será completamente responsivo, adaptándose perfectamente a celulares, tablets y computadores.',
           investment: '2 UF',
         },
         {
@@ -54,12 +54,12 @@ La presente propuesta tiene como objetivo reemplazar por completo su sitio web a
         },
         {
           name: 'Omni-POS y Webpay Plus',
-          description: 'Unificaremos la experiencia de venta física y online en una sola interfaz intuitiva. El Punto de Venta (POS) estará diseñado para ser operado por los dos dueños simultáneamente, cada uno desde su sucursal, sin conflictos de sesión ni pérdida de datos. Incluye: registro de ventas con búsqueda rápida de productos, lectura de código de barras para agilizar el cobro, integración con Webpay Plus para pagos con tarjeta de crédito y débito (online y presencial), arqueo de caja automático con detalle completo de efectivo, Webpay y transferencias, e historial de ventas por sucursal. Cuando se realiza una venta online, el sistema descuenta el stock de la sucursal seleccionada por el cliente y prepara automáticamente la orden para despacho.',
+          description: 'Unificaremos la experiencia de venta física y online en una sola interfaz intuitiva. El Punto de Venta (POS) estará diseñado para ser operado por los dos dueños simultáneamente, cada uno desde su sucursal, sin conflictos de sesión ni pérdida de datos. La integración con Webpay Plus se mantendrá exactamente igual a la actual para que los clientes no noten cambios en su experiencia de pago. Incluye: registro de ventas con búsqueda rápida de productos, lectura de código de barras para agilizar el cobro, integración con Webpay Plus para pagos con tarjeta de crédito y débito (online y presencial), arqueo de caja automático con detalle completo de efectivo, Webpay y transferencias, e historial de ventas por sucursal. Cuando se realiza una venta online, el sistema descuenta el stock de la sucursal seleccionada por el cliente y prepara automáticamente la orden para despacho.',
           investment: '1.5 UF',
         },
         {
           name: 'Gestión de Despachos y Arquitectura FACTO Ready',
-          description: 'Los dueños podrán configurar desde el panel las comunas a las que realizan envíos (Rancagua y Machalí) y asignar un precio de despacho por cada una. El cliente, al momento de comprar, seleccionará su comuna y el sistema calculará automáticamente el costo de envío. Las reglas de despacho serán totalmente configurables: monto mínimo para despacho gratuito, horarios de corte para Same-Day Delivery, y zonas prioritarias. En cuanto a FACTO, Maskota Center utiliza actualmente esta plataforma para su facturación electrónica a través de su sitio web, sin acceso a API. Nuestra arquitectura contempla dejar preparado un módulo de integración listo para conectar con la API REST de FACTO en el momento en que ustedes obtengan las credenciales de acceso. Esto significa que el sistema se construye con los endpoints de integración ya definidos, cuando FACTO active su API la conexión se realiza en cuestión de horas, no será necesario reescribir ni modificar el código existente, y mientras tanto el sistema funciona de forma completamente autónoma.',
+          description: 'Los dueños podrán configurar desde el panel las comunas a las que realizan envíos (Rancagua, Machalí y Graneros) y asignar un precio de despacho por cada una. El cliente, al momento de comprar, seleccionará su comuna y el sistema calculará automáticamente el costo de envío. Las reglas de despacho serán totalmente configurables: monto mínimo para despacho gratuito, horarios de corte para Same-Day Delivery, y zonas prioritarias. En cuanto a FACTO, Maskota Center utiliza actualmente esta plataforma para su facturación electrónica a través de su sitio web, sin acceso a API. Nuestra arquitectura contempla dejar preparado un módulo de integración listo para conectar con la API REST de FACTO en el momento en que ustedes obtengan las credenciales de acceso. Esto significa que el sistema se construye con los endpoints de integración ya definidos, cuando FACTO active su API la conexión se realiza en cuestión de horas, no será necesario reescribir ni modificar el código existente, y mientras tanto el sistema funciona de forma completamente autónoma.',
           investment: '1.5 UF',
         },
       ],
@@ -73,7 +73,7 @@ La presente propuesta tiene como objetivo reemplazar por completo su sitio web a
     {
       label: 'A',
       title: 'Inventario Visible en Tiempo Real — Sin Conjeturas',
-      description: 'Los clientes verán exactamente cuántos productos hay disponibles en cada sucursal directamente desde la web: "10 unidades en Rancagua, 20 en Machalí". Si una sucursal no tiene stock, el sistema sugerirá automáticamente la otra ubicación o la opción de despacho a domicilio. Esto elimina las llamadas telefónicas para consultar disponibilidad y mejora la tasa de conversión.',
+      description: 'Los clientes verán exactamente cuántos productos hay disponibles en cada sucursal directamente desde la web: "10 unidades en Rancagua, 20 en Machalí, 5 en Graneros". Si una sucursal no tiene stock, el sistema sugerirá automáticamente la otra ubicación o la opción de despacho a domicilio. Ninguna otra tienda de mascotas en la Región de O\'Higgins ofrece esta funcionalidad, lo que los posiciona como la opción más moderna y conveniente para los dueños de mascotas. Esto elimina las llamadas telefónicas para consultar disponibilidad y mejora la tasa de conversión.',
     },
     {
       label: 'B',
@@ -88,7 +88,7 @@ La presente propuesta tiene como objetivo reemplazar por completo su sitio web a
   ],
   marketing: [],
   mockups: [],
-  tags: ['e-commerce', 'pet-shop', 'multi-sucursal', 'FACTO', 'Rancagua', 'Machalí'],
+  tags: ['e-commerce', 'pet-shop', 'multi-sucursal', 'FACTO', 'Rancagua', 'Machalí', 'Graneros'],
   commercial: {
     total: '10 UF + IVA',
     timeline: '25 días hábiles (12 días Fase 1 + 13 días Fase 2)',

@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { acceptProposal } from '@/app/actions/proposals';
-import { CheckCircle2, Code, Zap, Layers, Sparkles, BarChart3, ImageIcon, DollarSign, GitCompare, Download, ExternalLink } from 'lucide-react';
+import { CheckCircle2, Download, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
 import BackToTop from '@/components/BackToTop';
 import type { ProposalContent } from '@/lib/proposal-helpers';
@@ -119,12 +119,13 @@ export default function ProposalRenderer({ data, proposalInfo, files, onAccepted
           .mod-table, .mod-table thead, .mod-table tbody, .mod-table tfoot, .mod-table tr { display: block; }
           .mod-table thead { display: none; }
           .mod-table tr { margin-bottom: 1rem; border: 1px solid #e4e4e7; border-radius: 8px; padding: 0.6rem; }
-          .mod-table td { display: block; padding: 0.25rem 0 !important; border: none !important; }
-          .mod-table .td-name { display: flex; justify-content: space-between; align-items: center; }
-          .mod-table .td-price { text-align: right !important; }
-          .mod-table .td-desc { color: var(--text-muted); font-size: 0.8rem; line-height: 1.5; margin-top: 0.3rem; }
-          .mod-table tfoot tr { border: 2px solid #059669; margin-top: 0.5rem; }
-          .mod-table tfoot td { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0 !important; }
+          .mod-table td { display: block; padding: 0.25rem 0 !important; border: none !important; width: 100% !important; }
+          .mod-table .td-name > div { display: flex !important; flex-direction: row !important; justify-content: space-between; align-items: center; padding-bottom: 0.3rem; margin-bottom: 0.3rem; border-bottom: 1px solid #f0f0f2; width: 100%; }
+          .mod-table .td-name-inner { font-weight: 700; }
+          .mod-table .td-price { color: #059669; font-weight: 700; font-size: 0.85rem !important; text-align: right !important; white-space: nowrap !important; }
+          .mod-table .td-desc { color: var(--text-muted); font-size: 0.8rem; line-height: 1.5; width: 100%; }
+          .mod-table tfoot tr { border-top: 2px solid #059669 !important; margin-top: 0.5rem; display: flex; justify-content: space-between; width: 100%; }
+          .mod-table tfoot td { display: inline; padding: 0.5rem 0 !important; border: none !important; width: auto !important; }
         }
       `}</style>
 
@@ -145,7 +146,7 @@ export default function ProposalRenderer({ data, proposalInfo, files, onAccepted
           {/* INTRODUCCIÓN */}
           <section>
             {sectionTitle('Introducción y Objetivos')}
-            <div style={{ fontSize: "0.9rem", lineHeight: "1.8", color: "var(--text)", whiteSpace: "pre-wrap" }}>
+            <div style={{ fontSize: "0.9rem", lineHeight: "1.8", color: "var(--text)", whiteSpace: "pre-wrap", textAlign: "justify" }}>
               {p.introObjectives}
             </div>
           </section>
@@ -154,29 +155,33 @@ export default function ProposalRenderer({ data, proposalInfo, files, onAccepted
           {p.developmentGroups?.map((group, gIdx) => (
             <section key={gIdx}>
               {sectionTitle(group.title)}
-              {group.description && <p style={{ fontSize: "0.9rem", lineHeight: "1.7", color: "var(--text-muted)", marginBottom: "1rem" }}>{group.description}</p>}
+              {group.description && <p style={{ fontSize: "0.9rem", lineHeight: "1.7", color: "var(--text-muted)", marginBottom: "1rem", textAlign: "justify" }}>{group.description}</p>}
               {group.modules?.length > 0 && (
                 <table className="mod-table" style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.85rem", marginBottom: "0.5rem" }}>
                   <thead>
                     <tr style={{ borderBottom: "2px solid #e4e4e7" }}>
-                      <th style={{ padding: "0.5rem 0.6rem", textAlign: "left", color: "var(--text-muted)", fontWeight: "700", fontSize: "0.7rem", textTransform: "uppercase", width: "22%" }}>Módulo</th>
+                      <th style={{ padding: "0.5rem 0.6rem", textAlign: "left", color: "var(--text-muted)", fontWeight: "700", fontSize: "0.7rem", textTransform: "uppercase", width: "30%" }}>Módulo / Inversión</th>
                       <th style={{ padding: "0.5rem 0.6rem", textAlign: "left", color: "var(--text-muted)", fontWeight: "700", fontSize: "0.7rem", textTransform: "uppercase" }}>Descripción</th>
-                      <th style={{ padding: "0.5rem 0.6rem", textAlign: "right", color: "var(--text-muted)", fontWeight: "700", fontSize: "0.7rem", textTransform: "uppercase", width: "12%" }}>Inversión</th>
                     </tr>
                   </thead>
                   <tbody>
                     {group.modules.map((mod, mIdx) => (
                       <tr key={mIdx} style={{ borderBottom: "1px solid #f0f0f2" }}>
-                        <td className="td-name" style={{ padding: "0.6rem", fontWeight: "700", verticalAlign: "top" }}><span className="td-name-inner">{mod.name}</span><span className="td-price" style={{ fontWeight: "700", color: "#059669", whiteSpace: "nowrap" }}>{mod.investment}</span></td>
-                        <td className="td-desc" style={{ padding: "0.6rem", color: "var(--text-muted)", lineHeight: "1.6", verticalAlign: "top" }} colSpan={2}>{mod.description}</td>
+                        <td className="td-name" style={{ padding: "0.6rem", fontWeight: "700", verticalAlign: "top", width: "30%" }}>
+                          <div style={{ display: "flex", flexDirection: "column", gap: "0.2rem" }}>
+                            <span className="td-name-inner">{mod.name}</span>
+                            <span className="td-price" style={{ fontWeight: "700", color: "#059669", fontSize: "0.9rem", whiteSpace: "nowrap" }}>{mod.investment}</span>
+                          </div>
+                        </td>
+                        <td className="td-desc" style={{ padding: "0.6rem", color: "var(--text-muted)", lineHeight: "1.6", verticalAlign: "top", textAlign: "justify" }}>{mod.description}</td>
                       </tr>
                     ))}
                   </tbody>
                   {(group.subtotal || group.timeline) && (
                     <tfoot>
                       <tr style={{ borderTop: "2px solid #059669" }}>
-                        <td style={{ padding: "0.6rem", fontWeight: "700", fontSize: "0.85rem" }} colSpan={2}>{group.timeline ? `Subtotal — ${group.timeline}` : 'Subtotal'}</td>
-                        <td style={{ padding: "0.6rem", textAlign: "right", fontWeight: "900", color: "#059669", fontSize: "1rem" }}>{group.subtotal}</td>
+                        <td style={{ padding: "0.6rem", fontWeight: "700", fontSize: "0.85rem" }}>{group.timeline ? `Subtotal — ${group.timeline}` : 'Subtotal'}</td>
+                        <td style={{ padding: "0.6rem", textAlign: "right", fontWeight: "900", color: "#059669", fontSize: "1rem", whiteSpace: "nowrap" }}>{group.subtotal}</td>
                       </tr>
                     </tfoot>
                   )}
@@ -189,7 +194,7 @@ export default function ProposalRenderer({ data, proposalInfo, files, onAccepted
           {hasComparative && (
             <section>
               {sectionTitle('Análisis Comparativo')}
-              <div style={{ fontSize: "0.9rem", lineHeight: "1.8", color: "var(--text-muted)", whiteSpace: "pre-wrap" }}>{p.comparativeAnalysis}</div>
+              <div style={{ fontSize: "0.9rem", lineHeight: "1.8", color: "var(--text-muted)", whiteSpace: "pre-wrap", textAlign: "justify" }}>{p.comparativeAnalysis}</div>
             </section>
           )}
 
@@ -197,7 +202,7 @@ export default function ProposalRenderer({ data, proposalInfo, files, onAccepted
           {hasIntegration && (
             <section>
               {sectionTitle('Análisis de Integración')}
-              <div style={{ fontSize: "0.9rem", lineHeight: "1.8", color: "var(--text-muted)" }}>{p.integration}</div>
+              <div style={{ fontSize: "0.9rem", lineHeight: "1.8", color: "var(--text-muted)", textAlign: "justify" }}>{p.integration}</div>
             </section>
           )}
 
@@ -211,7 +216,7 @@ export default function ProposalRenderer({ data, proposalInfo, files, onAccepted
                     <span style={{ fontWeight: "900", fontSize: "1rem", color: "#f59e0b", flexShrink: 0 }}>{diff.label}.</span>
                     <h3 style={{ fontSize: "0.95rem", fontWeight: "700", margin: 0 }}>{diff.title}</h3>
                   </div>
-                  <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", lineHeight: "1.6", margin: "0.3rem 0 0", paddingLeft: "1.5rem" }}>{diff.description}</p>
+                  <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", lineHeight: "1.6", margin: "0.3rem 0 0", paddingLeft: "1.5rem", textAlign: "justify" }}>{diff.description}</p>
                 </div>
               ))}
             </section>
@@ -233,8 +238,8 @@ export default function ProposalRenderer({ data, proposalInfo, files, onAccepted
                   {p.marketing.map((mkt, idx) => (
                     <tr key={idx} style={{ borderBottom: "1px solid #f0f0f2" }}>
                       <td style={{ padding: "0.6rem", fontWeight: "700" }}>{mkt.name}</td>
-                      <td style={{ padding: "0.6rem", color: "var(--text-muted)", lineHeight: "1.5" }}>{mkt.description}</td>
-                      <td style={{ padding: "0.6rem", textAlign: "right", fontWeight: "700", color: "#059669" }}>{mkt.investment}</td>
+                      <td style={{ padding: "0.6rem", color: "var(--text-muted)", lineHeight: "1.5", textAlign: "justify" }}>{mkt.description}</td>
+                      <td style={{ padding: "0.6rem", textAlign: "right", fontWeight: "700", color: "#059669", whiteSpace: "nowrap" }}>{mkt.investment}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -293,7 +298,7 @@ export default function ProposalRenderer({ data, proposalInfo, files, onAccepted
                       <span style={{ fontSize: "0.85rem" }}>{pay.description}</span>
                       <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.15rem" }}>
                         {pay.percentage && <span style={{ fontSize: "0.75rem", fontWeight: "700", color: "var(--primary)" }}>{pay.percentage}</span>}
-                        {pay.amount && <span style={{ fontSize: "0.8rem", fontWeight: "800", color: "#059669" }}>{pay.amount}</span>}
+                        {pay.amount && <span style={{ fontSize: "0.8rem", fontWeight: "800", color: "#059669", whiteSpace: "nowrap" }}>{pay.amount}</span>}
                       </div>
                     </div>
                   </div>
@@ -304,14 +309,14 @@ export default function ProposalRenderer({ data, proposalInfo, files, onAccepted
             {p.commercial.intellectualProperty && (
               <div style={{ marginBottom: "0.8rem" }}>
                 <h3 style={{ fontSize: "0.9rem", fontWeight: "800", marginBottom: "0.2rem" }}>Propiedad Intelectual</h3>
-                <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", lineHeight: "1.5", margin: 0 }}>{p.commercial.intellectualProperty}</p>
+                <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", lineHeight: "1.5", margin: 0, textAlign: "justify" }}>{p.commercial.intellectualProperty}</p>
               </div>
             )}
 
             {p.commercial.warranty && (
               <div>
                 <h3 style={{ fontSize: "0.9rem", fontWeight: "800", marginBottom: "0.2rem" }}>Garantía y Soporte</h3>
-                <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", lineHeight: "1.5", margin: 0 }}>{p.commercial.warranty}</p>
+                <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", lineHeight: "1.5", margin: 0, textAlign: "justify" }}>{p.commercial.warranty}</p>
               </div>
             )}
           </section>

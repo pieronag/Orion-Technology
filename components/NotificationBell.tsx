@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { getNotifications, markNotificationRead } from '@/app/actions/proposals';
-import { Bell, X, CheckCircle2, ExternalLink } from 'lucide-react';
+import { Bell, X, CheckCircle2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 

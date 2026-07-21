@@ -1,13 +1,15 @@
 {
-  "name": "temp-app",
-  "version": "0.1.0",
+  "name": "orion-technology",
+  "version": "2.0.0",
   "private": true,
+  "description": "Sistema de Gestión de Propuestas Tecnológicas — Orion Technology",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed": "npx tsx scripts/seed-maskota-proposal.ts"
+    "seed": "npx tsx scripts/seed-maskota-proposal.ts",
+    "update-maskota": "npx tsx scripts/update-maskota-proposal.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

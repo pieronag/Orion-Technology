@@ -5,7 +5,7 @@ import { getProposals } from '@/app/actions/proposals';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { ExternalLink, Clock, CheckCircle2, Eye, Search, Copy, Check, AlertTriangle, Tag, Columns, List, Share2, Download, Mail } from 'lucide-react';
+import { ExternalLink, Clock, CheckCircle2, Eye, Search, Copy, Check, AlertTriangle, Tag, Columns, List, Share2, Download } from 'lucide-react';
 import ProposalActions from '@/components/ProposalActions';
 import KanbanBoard from '@/components/KanbanBoard';
 import AnalyticsPanel from '@/components/AnalyticsPanel';

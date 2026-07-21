@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { DndContext, DragEndEvent, useDraggable, useDroppable, closestCorners } from '@dnd-kit/core';
 import { setProposalStatus } from '@/app/actions/proposals';
 import { ExternalLink, Clock, Eye, CheckCircle2 } from 'lucide-react';
