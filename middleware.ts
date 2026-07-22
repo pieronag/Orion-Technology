@@ -6,21 +6,22 @@ const secretKey = process.env.JWT_SECRET || 'secret';
 const key = new TextEncoder().encode(secretKey);
 
 export async function middleware(request: NextRequest) {
-  // Solo proteger rutas bajo /dashboard
-  if (request.nextUrl.pathname.startsWith('/dashboard')) {
+  const { pathname } = request.nextUrl;
+
+  if (pathname.startsWith('/dashboard') || pathname.startsWith('/nexus')) {
     const token = request.cookies.get('admin_session')?.value;
 
     if (!token) {
-      return NextResponse.redirect(new URL('/login', request.url));
+      const redirect = pathname.startsWith('/nexus') ? '/login?to=nexus' : '/login?to=flow';
+      return NextResponse.redirect(new URL(redirect, request.url));
     }
 
     try {
-      // Verificar JWT
       await jwtVerify(token, key);
       return NextResponse.next();
-    } catch (error) {
-      console.error('Invalid token', error);
-      return NextResponse.redirect(new URL('/login', request.url));
+    } catch {
+      const redirect = pathname.startsWith('/nexus') ? '/login?to=nexus' : '/login?to=flow';
+      return NextResponse.redirect(new URL(redirect, request.url));
     }
   }
 
@@ -28,5 +29,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*'],
+  matcher: ['/dashboard/:path*', '/nexus/:path*'],
 };

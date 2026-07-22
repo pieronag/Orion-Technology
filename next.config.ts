@@ -1,14 +1,17 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
+const nextConfig: any = {
   images: {
-    unoptimized: true, // <--- Obligatorio para exportación estática en Next.js
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'images.unsplash.com',
       },
     ],
+  },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '5mb',
+    },
   },
 };
 

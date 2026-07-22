@@ -10,26 +10,24 @@ export async function loginAdmin(password: string) {
   const adminPassword = process.env.ADMIN_PASSWORD;
 
   if (password === adminPassword) {
-    // Generate JWT
     const token = await new SignJWT({ role: 'admin' })
       .setProtectedHeader({ alg: 'HS256' })
       .setIssuedAt()
-      .setExpirationTime('24h') // Session valid for 24 hours
+      .setExpirationTime('24h')
       .sign(key);
 
-    // Set Cookie
     (await cookies()).set('admin_session', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
-      maxAge: 60 * 60 * 24, // 24 hours
+      maxAge: 60 * 60 * 24,
     });
 
     return { success: true };
-  } else {
-    return { success: false, error: 'Contraseña incorrecta' };
   }
+
+  return { success: false, error: 'Contraseña incorrecta' };
 }
 
 export async function logoutAdmin() {
