@@ -7,7 +7,7 @@ import { getEquipments, EquipmentData } from '@/app/actions/nexus/equipments';
 import { createEquipment } from '@/app/actions/nexus/equipments';
 import { createQuote, QuoteItem, QuoteData } from '@/app/actions/nexus/quotes';
 import Link from 'next/link';
-import { ArrowLeft, Plus, Trash2, Calculator } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Calculator, Search } from 'lucide-react';
 import { EQUIPMENT_TYPES } from '@/data/diagnosis-templates';
 
 export default function NewQuotePage() {
@@ -22,9 +22,14 @@ export default function NewQuotePage() {
   const [validDays, setValidDays] = useState(15);
   const [saving, setSaving] = useState(false);
 
+  const [clientSearch, setClientSearch] = useState('');
   const [showNewEquipment, setShowNewEquipment] = useState(false);
   const [newEq, setNewEq] = useState({ type: 'pc', brand: '', model: '', serialNumber: '' });
   const [creatingEq, setCreatingEq] = useState(false);
+
+  const filteredClients = clients.filter(c =>
+    !clientSearch || clientSearch.length < 3 || c.name?.toLowerCase().includes(clientSearch.toLowerCase()) || c.rut?.includes(clientSearch)
+  );
 
   useEffect(() => {
     Promise.all([getClients(), getEquipments()]).then(([cr, er]) => {
@@ -107,11 +112,28 @@ export default function NewQuotePage() {
         <div className="bento-col-6">
           {/* Client & Equipment */}
           <div className="card" style={{ marginBottom: '0.75rem' }}>
-            <h3 style={{ fontSize: '0.85rem', marginBottom: '0.6rem' }}>Cliente</h3>
-            <select value={selectedClientId} onChange={e => { setSelectedClientId(e.target.value); setSelectedEquipmentId(''); setShowNewEquipment(false); setBillingType(clients.find(c => c.id === e.target.value)?.billingType || 'sin_boleta'); }} style={inputStyle}>
-              <option value="">Seleccionar cliente...</option>
-              {clients.map(c => <option key={c.id} value={c.id}>{c.name} {c.rut ? `(${c.rut})` : ''}</option>)}
-            </select>
+            <h3 style={{ fontSize: '0.85rem', marginBottom: '0.4rem' }}>Cliente</h3>
+            {selectedClientId ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem', background: 'var(--bg-accent)', borderRadius: '6px' }}>
+                <span style={{ flex: 1, fontWeight: 600, fontSize: '0.85rem' }}>{clients.find(c => c.id === selectedClientId)?.name}</span>
+                <span className={`badge ${selectedClient?.billingType === 'con_boleta' ? 'badge-blue' : 'badge-orange'}`} style={{ fontSize: '0.6rem' }}>{selectedClient?.billingType === 'con_boleta' ? 'Boleta' : 'S/Boleta'}</span>
+                <button onClick={() => { setSelectedClientId(''); setSelectedEquipmentId(''); setClientSearch(''); }} className="btn-ghost btn-sm" style={{ color: '#ef4444' }}>Cambiar</button>
+              </div>
+            ) : (
+              <div>
+                <input placeholder="Buscar cliente (mín. 3 caracteres)..." value={clientSearch} onChange={e => setClientSearch(e.target.value)} style={inputStyle} />
+                {clientSearch.length >= 3 && (
+                  <div style={{ maxHeight: '140px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.15rem', marginTop: '0.3rem' }}>
+                    {filteredClients.map(c => (
+                      <button key={c.id} type="button" onClick={() => { setSelectedClientId(c.id!); setClientSearch(''); setBillingType(c.billingType); }}
+                        style={{ textAlign: 'left', padding: '0.4rem 0.6rem', borderRadius: '6px', border: 'none', borderBottom: '1px solid var(--border-light)', background: 'transparent', cursor: 'pointer', fontSize: '0.8rem', fontFamily: 'inherit', color: 'var(--text)', width: '100%' }}>
+                        <strong>{c.name}</strong> {c.rut && <span style={{ color: 'var(--text-muted)' }}> · {c.rut}</span>}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {selectedClientId && (
@@ -164,18 +186,30 @@ export default function NewQuotePage() {
               </div>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               {items.map((item, i) => (
-                <div key={i} style={{ display: 'flex', gap: '0.3rem', alignItems: 'center' }}>
-                  <select value={item.type} onChange={e => updateItem(i, 'type', e.target.value)} style={{ ...inputStyle, width: '80px', fontSize: '0.7rem', padding: '0.3rem' }}>
-                    <option value="labor">Mano obra</option>
-                    <option value="part">Repuesto</option>
-                  </select>
-                  <input placeholder="Descripción" value={item.description} onChange={e => updateItem(i, 'description', e.target.value)} style={{ ...inputStyle, flex: 1, fontSize: '0.8rem' }} />
-                  <input type="number" placeholder="Cant." value={item.quantity || ''} onChange={e => updateItem(i, 'quantity', Math.max(1, parseInt(e.target.value) || 1))} style={{ ...inputStyle, width: '50px', fontSize: '0.75rem', textAlign: 'center' }} />
-                  <input type="number" placeholder="$ Unit." value={item.unitPrice || ''} onChange={e => updateItem(i, 'unitPrice', parseInt(e.target.value) || 0)} style={{ ...inputStyle, width: '90px', fontSize: '0.75rem', textAlign: 'right' }} />
-                  <span style={{ fontWeight: 700, fontSize: '0.8rem', width: '70px', textAlign: 'right' }}>${(item.quantity * item.unitPrice).toLocaleString('es-CL')}</span>
-                  <button type="button" onClick={() => removeItem(i)} className="btn-icon" style={{ color: '#ef4444' }}><Trash2 size={14} /></button>
+                <div key={i} style={{ padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.3rem' }}>
+                    <select value={item.type} onChange={e => updateItem(i, 'type', e.target.value)} style={{ width: 'auto', padding: '0.35rem 0.5rem', borderRadius: '6px', border: '1px solid var(--border)', background: '#fff', color: 'var(--text)', fontSize: '0.78rem', fontFamily: 'inherit', cursor: 'pointer' }}>
+                      <option value="labor">🛠 Mano de obra</option>
+                      <option value="part">🔧 Repuesto</option>
+                    </select>
+                    <button type="button" onClick={() => removeItem(i)} className="btn-icon" style={{ color: '#ef4444', width: '28px', height: '28px' }}><Trash2 size={14} /></button>
+                  </div>
+                  <input placeholder="Descripción del servicio o repuesto..." value={item.description} onChange={e => updateItem(i, 'description', e.target.value)} style={{ ...inputStyle, fontSize: '0.85rem', padding: '0.4rem 0.6rem', marginBottom: '0.3rem' }} />
+                  <div style={{ display: 'flex', gap: '0.3rem', alignItems: 'center' }}>
+                    <div style={{ flex: 1 }}>
+                      <label style={{ fontSize: '0.62rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '0.1rem' }}>Cantidad</label>
+                      <input type="number" value={item.quantity || ''} onChange={e => updateItem(i, 'quantity', Math.max(1, parseInt(e.target.value) || 1))} style={{ ...inputStyle, fontSize: '0.85rem', padding: '0.4rem 0.6rem', textAlign: 'center' }} />
+                    </div>
+                    <div style={{ flex: 2 }}>
+                      <label style={{ fontSize: '0.62rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '0.1rem' }}>Precio unitario</label>
+                      <input type="number" value={item.unitPrice || ''} onChange={e => updateItem(i, 'unitPrice', parseInt(e.target.value) || 0)} style={{ ...inputStyle, fontSize: '0.85rem', padding: '0.4rem 0.6rem', textAlign: 'right' }} />
+                    </div>
+                  </div>
+                  <div style={{ textAlign: 'right', marginTop: '0.2rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                    Subtotal: <span style={{ fontWeight: 700, color: 'var(--text)', fontSize: '0.9rem' }}>${(item.quantity * item.unitPrice).toLocaleString('es-CL')}</span>
+                  </div>
                 </div>
               ))}
             </div>

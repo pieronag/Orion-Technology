@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { getWorkOrder, updateWorkOrderStatus, updateWorkOrder, uploadAfterPhoto, deleteAfterPhoto, deleteWorkOrder, WorkOrderData } from '@/app/actions/nexus/work-orders';
+import { getSettings } from '@/app/actions/nexus/settings';
 import { getWorkOrderPayments, createPayment, deletePayment, PaymentData } from '@/app/actions/nexus/payments';
 import { getClient } from '@/app/actions/nexus/clients';
 import { getEquipment, updateEquipment, uploadEquipmentPhoto, deleteEquipmentPhoto } from '@/app/actions/nexus/equipments';
@@ -54,10 +55,12 @@ export default function WorkOrderDetailPage() {
   const [showQuotePicker, setShowQuotePicker] = useState(false);
 
   useEffect(() => {
-    const savedTechs = localStorage.getItem('nexus-technicians');
-    const savedBranches = localStorage.getItem('nexus-branches');
-    if (savedTechs) setTechnicians(JSON.parse(savedTechs));
-    if (savedBranches) setBranches(JSON.parse(savedBranches));
+    getSettings().then(r => {
+      if (r.success) {
+        setTechnicians(r.settings.technicians);
+        setBranches(r.settings.branches);
+      }
+    });
   }, []);
 
   const handleSaveTotal = async () => {
@@ -443,7 +446,7 @@ export default function WorkOrderDetailPage() {
               <h3 style={{ fontSize: '0.85rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
                 <Clock size={14} /> Pagos
               </h3>
-              <button onClick={() => setShowPaymentForm(!showPaymentForm)} className="btn btn-primary btn-sm"><Plus size={13} /> Registrar pago</button>
+              <button onClick={() => setShowPaymentForm(!showPaymentForm)} className="btn btn-primary btn-sm" style={{ width: '30%' }}><Plus size={13} /> Registrar pago</button>
             </div>
 
             <div style={{ display: 'flex', gap: '1rem', marginBottom: '0.5rem', alignItems: 'flex-start' }}>

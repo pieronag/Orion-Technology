@@ -100,13 +100,20 @@ function NewEquipmentForm() {
 
   return (
     <div>
-      <Link href="/nexus/equipments" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.8rem', fontWeight: 600, marginBottom: '1rem' }}>
+      <style>{`@media (max-width: 640px) {
+        .eq-new-grid { grid-template-columns: 1fr !important; }
+        .eq-new-fields { grid-template-columns: 1fr !important; }
+        .eq-new-diagnosis input { width: 100% !important; }
+        .eq-new-photo { width: 60px !important; height: 60px !important; }
+        .eq-new-btn { font-size: 0.82rem !important; padding: 0.5rem 1rem !important; }
+      }`}</style>
+      <Link href="/nexus/equipments" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.8rem', fontFamily: 'inherit', marginBottom: '0.75rem' }}>
         <ArrowLeft size={14} /> Volver
       </Link>
 
-      <h1 style={{ fontSize: '1.3rem', marginBottom: '1rem' }}>Recepción de equipo</h1>
+      <h1 style={{ fontSize: '1.2rem', marginBottom: '0.75rem' }}>Nuevo equipo</h1>
 
-      <div className="bento-grid">
+      <div className="bento-grid eq-new-grid">
         <div className="bento-col-5">
           {/* Client selection */}
           <div className="card" style={{ marginBottom: '0.75rem' }}>
@@ -120,31 +127,32 @@ function NewEquipmentForm() {
             ) : (
               <div>
                 {newClientForm ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-                    <input placeholder="Nombre" style={inputStyle} autoFocus />
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', padding: '0.6rem', background: 'var(--bg-accent)', borderRadius: '8px' }}>
+                    <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)' }}>Nuevo cliente</div>
+                    <input placeholder="Nombre *" style={{ ...inputStyle, fontSize: '0.85rem', padding: '0.5rem 0.65rem' }} autoFocus />
+                    <input placeholder="RUT" style={{ ...inputStyle, fontSize: '0.85rem', padding: '0.5rem 0.65rem' }} />
+                    <input placeholder="Teléfono" style={{ ...inputStyle, fontSize: '0.85rem', padding: '0.5rem 0.65rem' }} />
                     <div style={{ display: 'flex', gap: '0.3rem' }}>
-                      <input placeholder="RUT" style={{ ...inputStyle, flex: 1 }} />
-                      <input placeholder="Teléfono" style={{ ...inputStyle, flex: 1 }} />
+                      <button type="button" className="btn btn-primary btn-sm" style={{ flex: 1, fontSize: '0.82rem', padding: '0.5rem' }}>Guardar cliente</button>
+                      <button type="button" onClick={() => setNewClientForm(false)} className="btn btn-outline btn-sm" style={{ flex: 1, fontSize: '0.82rem', padding: '0.5rem' }}>Cancelar</button>
                     </div>
                   </div>
                 ) : (
                   <div>
-                    <div style={{ position: 'relative', marginBottom: '0.4rem' }}>
-                      <Search size={14} style={{ position: 'absolute', left: '0.6rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-                      <input placeholder="Buscar cliente..." value={clientSearch} onChange={e => setClientSearch(e.target.value)} style={{ ...inputStyle, paddingLeft: '2rem' }} />
-                    </div>
-                    <div style={{ maxHeight: '120px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                    <input placeholder="Buscar cliente (mín. 3 caracteres)..." value={clientSearch} onChange={e => setClientSearch(e.target.value)} style={{ ...inputStyle, marginBottom: '0.3rem' }} />
+                    {clientSearch.length >= 3 && (
+                    <div style={{ maxHeight: '120px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.2rem', marginBottom: '0.3rem' }}>
                       {filteredClients.map(c => (
                         <button key={c.id} type="button" onClick={() => { setForm({ ...form, clientId: c.id! }); setShowClientPicker(false); }}
-                          style={{ textAlign: 'left', padding: '0.4rem 0.6rem', borderRadius: '4px', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: '0.8rem', fontFamily: 'inherit', color: 'var(--text)' }}
-                          className="hover:bg-[rgba(0,0,0,0.03)]">
-                          <strong>{c.name}</strong> {c.rut && <span style={{ color: 'var(--text-muted)' }}>· {c.rut}</span>}
+                          style={{ textAlign: 'left', padding: '0.4rem 0.6rem', borderRadius: '4px', border: 'none', borderBottom: '1px solid var(--border-light)', background: 'transparent', cursor: 'pointer', fontSize: '0.8rem', fontFamily: 'inherit', color: 'var(--text)', width: '100%' }}>
+                          <strong>{c.name}</strong> {c.rut && <span style={{ color: 'var(--text-muted)' }}> · {c.rut}</span>}
                         </button>
                       ))}
                     </div>
-                    <button type="button" onClick={() => setNewClientForm(true)} style={{ marginTop: '0.3rem', fontSize: '0.75rem', color: 'var(--primary)', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                      <Plus size={12} /> Nuevo cliente
-                    </button>
+                    )}
+                    <div style={{ display: 'flex', gap: '0.3rem', marginTop: '0.3rem' }}>
+                      <button type="button" onClick={() => setNewClientForm(true)} className="btn btn-primary btn-sm eq-new-btn"><Plus size={13} /> Nuevo cliente</button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -154,7 +162,7 @@ function NewEquipmentForm() {
           {/* Equipment form */}
           <div className="card">
             <h3 style={{ fontSize: '0.85rem', marginBottom: '0.6rem' }}>Datos del equipo</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+            <div className="eq-new-fields" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
               <select value={form.type} onChange={e => setForm({ ...form, type: e.target.value })} style={inputStyle}>
                 {EQUIPMENT_TYPES.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}
               </select>
@@ -175,10 +183,8 @@ function NewEquipmentForm() {
                   </span>
                 ))}
               </div>
-              <div style={{ display: 'flex', gap: '0.3rem' }}>
-                <input placeholder="Ej: Cargador, cable HDMI..." value={accessoryInput} onChange={e => setAccessoryInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addAccessory())} style={{ ...inputStyle, flex: 1 }} />
-                <button type="button" onClick={addAccessory} className="btn btn-outline btn-sm">+</button>
-              </div>
+              <input placeholder="Ej: Cargador, cable HDMI..." value={accessoryInput} onChange={e => setAccessoryInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addAccessory())} style={{ ...inputStyle }} />
+              <button type="button" onClick={addAccessory} className="btn btn-outline btn-sm eq-new-btn" style={{ marginTop: '0.2rem', width: '100%' }}>+ Agregar</button>
             </div>
 
             <div style={{ marginTop: '0.5rem' }}>
@@ -199,7 +205,7 @@ function NewEquipmentForm() {
                   <button type="button" onClick={() => removePhoto(i)} style={{ position: 'absolute', top: '2px', right: '2px', background: 'rgba(0,0,0,0.6)', border: 'none', borderRadius: '50%', width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#fff' }}><X size={12} /></button>
                 </div>
               ))}
-              <label style={{ width: '80px', height: '80px', borderRadius: '6px', border: '2px dashed var(--glass-border)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text-muted)', fontSize: '0.6rem', gap: '0.2rem' }}>
+              <label className="eq-new-photo" style={{ width: '80px', height: '80px', borderRadius: '6px', border: '2px dashed var(--border)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text-muted)', fontSize: '0.6rem', gap: '0.2rem' }}>
                 <Camera size={18} />
                 Foto
                 <input type="file" accept="image/*" capture="environment" onChange={handlePhoto} style={{ display: 'none' }} />
@@ -208,7 +214,7 @@ function NewEquipmentForm() {
           </div>
 
           {/* Diagnosis template */}
-          <div className="card">
+          <div className="card eq-new-diagnosis">
             <h3 style={{ fontSize: '0.85rem', marginBottom: '0.6rem' }}>Checklist diagnóstico</h3>
             <select value={template?.id || ''} onChange={e => { const t = DIAGNOSIS_TEMPLATES.find(t => t.id === e.target.value); setTemplate(t || null); setDiagnosisResults({}); }}
               style={{ ...inputStyle, marginBottom: '0.5rem' }}>
@@ -220,17 +226,21 @@ function NewEquipmentForm() {
             {template && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
                 {template.items.map(item => (
-                  <div key={item.id} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.4rem', fontSize: '0.8rem' }}>
-                    {item.type === 'check' ? (
-                      <button type="button" onClick={() => setDiagnosisResults({ ...diagnosisResults, [item.id]: diagnosisResults[item.id] === 'ok' ? '' : 'ok' })}
-                        style={{ width: '18px', height: '18px', borderRadius: '4px', border: `2px solid ${diagnosisResults[item.id] === 'ok' ? '#10b981' : 'var(--glass-border)'}`, background: diagnosisResults[item.id] === 'ok' ? '#10b981' : 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '1px', color: '#fff' }}>
-                        {diagnosisResults[item.id] === 'ok' && <Check size={12} />}
-                      </button>
-                    ) : null}
-                    <span style={{ flex: 1, color: diagnosisResults[item.id] === 'ok' ? 'var(--text-muted)' : 'var(--text)', textDecoration: diagnosisResults[item.id] === 'ok' ? 'line-through' : 'none' }}>{item.label}</span>
+                  <div key={item.id} style={{ padding: '0.25rem 0', borderBottom: '1px solid var(--border-light)' }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.4rem', fontSize: '0.8rem' }}>
+                      {item.type === 'check' ? (
+                        <button type="button" onClick={() => setDiagnosisResults({ ...diagnosisResults, [item.id]: diagnosisResults[item.id] === 'ok' ? '' : 'ok' })}
+                          style={{ width: '22px', height: '22px', borderRadius: '5px', border: `2px solid ${diagnosisResults[item.id] === 'ok' ? '#10b981' : '#d1d5db'}`, background: diagnosisResults[item.id] === 'ok' ? '#10b981' : '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '1px', color: '#fff', transition: 'all 0.15s' }}>
+                          {diagnosisResults[item.id] === 'ok' && <Check size={12} />}
+                        </button>
+                      ) : (
+                        <span style={{ color: '#d1d5db', flexShrink: 0, marginTop: '1px' }}>—</span>
+                      )}
+                      <span style={{ flex: 1, color: diagnosisResults[item.id] === 'ok' ? 'var(--text-muted)' : 'var(--text)', textDecoration: diagnosisResults[item.id] === 'ok' ? 'line-through' : 'none' }}>{item.label}</span>
+                    </div>
                     {(item.type === 'text' || item.type === 'value') && (
                       <input placeholder={item.type === 'value' ? 'Valor...' : 'Nota...'} value={diagnosisResults[item.id] || ''} onChange={e => setDiagnosisResults({ ...diagnosisResults, [item.id]: e.target.value })}
-                        style={{ ...inputStyle, width: '100px', fontSize: '0.7rem', padding: '0.2rem 0.4rem' }} />
+                        style={{ ...inputStyle, fontSize: '0.75rem', padding: '0.25rem 0.5rem', marginTop: '0.25rem' }} />
                     )}
                   </div>
                 ))}

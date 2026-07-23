@@ -64,43 +64,52 @@ export default function EquipmentsPage() {
 
   return (
     <div style={{ animation: 'fade-up 0.4s ease' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+      <style>{`@media (max-width: 640px) {
+        .eq-header { flex-direction: column !important; align-items: stretch !important; gap: 0.75rem !important; }
+        .eq-header .btn { width: 100% !important; text-align: center !important; font-size: 0.85rem !important; padding: 0.55rem 1rem !important; }
+        .eq-filters { flex-wrap: nowrap !important; gap: 0.4rem !important; }
+        .eq-filters input { font-size: 0.85rem !important; padding: 0.55rem 0.8rem !important; }
+        .eq-filters .search-icon { display: none !important; }
+        .eq-hide-mobile, .eq-hide-mobile-filter { display: none !important; }
+        .eq-table { min-width: unset !important; }
+      }`}</style>
+      <div className="eq-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
         <div>
           <h1 style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}><Monitor size={24} style={{ color: 'var(--secondary)' }} /> Equipos</h1>
           <p className="text-muted" style={{ fontSize: '0.8rem' }}>{filtered.length} registrados · {inWorkshop} en taller</p>
         </div>
-        <Link href="/nexus/equipments/new" className="btn btn-primary btn-sm" style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}><Plus size={15} /> Recepci&oacute;n</Link>
+        <Link href="/nexus/equipments/new" className="btn btn-primary btn-sm" style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}><Plus size={15} /> Nuevo equipo</Link>
       </div>
 
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+      <div className="eq-filters" style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
         <div style={{ position: 'relative', minWidth: '200px', flex: 1 }}>
-          <Search size={16} style={{ position: 'absolute', left: '0.8rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+          <Search size={16} className="search-icon" style={{ position: 'absolute', left: '0.8rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
           <input placeholder="Buscar por equipo, serie o cliente..." value={search} onChange={e => setSearch(e.target.value)}
             style={{ width: '100%', padding: '0.55rem 0.8rem 0.55rem 2.3rem', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '8px', color: 'var(--text)', fontSize: '0.82rem', fontFamily: 'inherit', outline: 'none' }} />
         </div>
-        <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)} style={{ width: '15%', padding: '0.45rem 0.6rem', borderRadius: '8px', border: '1px solid var(--border)', background: '#fff', color: 'var(--text)', fontSize: '0.78rem', fontFamily: 'inherit', cursor: 'pointer' }}>
+        <select className="eq-hide-mobile-filter" value={typeFilter} onChange={e => setTypeFilter(e.target.value)} style={{ width: '15%', padding: '0.45rem 0.6rem', borderRadius: '8px', border: '1px solid var(--border)', background: '#fff', color: 'var(--text)', fontSize: '0.78rem', fontFamily: 'inherit', cursor: 'pointer' }}>
           <option value="">Todos</option>
           {EQUIPMENT_TYPES.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}
         </select>
-        <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} style={{ width: '15%', padding: '0.45rem 0.6rem', borderRadius: '8px', border: '1px solid var(--border)', background: '#fff', color: 'var(--text)', fontSize: '0.78rem', fontFamily: 'inherit', cursor: 'pointer' }}>
+        <select className="eq-hide-mobile-filter" value={statusFilter} onChange={e => setStatusFilter(e.target.value)} style={{ width: '15%', padding: '0.45rem 0.6rem', borderRadius: '8px', border: '1px solid var(--border)', background: '#fff', color: 'var(--text)', fontSize: '0.78rem', fontFamily: 'inherit', cursor: 'pointer' }}>
           <option value="">Todos</option>
           <option value="active">En taller</option>
           <option value="inactive">Sin orden activa</option>
           <option value="warranty">En garant&iacute;a</option>
         </select>
-        <MonthYearFilter selectedMonth={filterMonth} selectedYear={filterYear} onChange={(m, y) => { setFilterMonth(m); setFilterYear(y); }} />
+        <div className="eq-hide-mobile-filter"><MonthYearFilter selectedMonth={filterMonth} selectedYear={filterYear} onChange={(m, y) => { setFilterMonth(m); setFilterYear(y); }} /></div>
       </div>
 
       <div className="card" style={{ padding: '0', overflowX: 'auto' }}>
-        <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse', minWidth: '700px' }}>
+        <table className="eq-table" style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse', minWidth: '700px' }}>
           <thead>
             <tr style={{ borderBottom: '1px solid var(--border)' }}>
               <th style={{ padding: '0.6rem 1rem', color: 'var(--text-muted)', fontWeight: 700, fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Equipo</th>
-              <th style={{ padding: '0.6rem 1rem', color: 'var(--text-muted)', fontWeight: 700, fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Tipo</th>
-              <th style={{ padding: '0.6rem 1rem', color: 'var(--text-muted)', fontWeight: 700, fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Serie</th>
+              <th className="eq-hide-mobile" style={{ padding: '0.6rem 1rem', color: 'var(--text-muted)', fontWeight: 700, fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Tipo</th>
+              <th className="eq-hide-mobile" style={{ padding: '0.6rem 1rem', color: 'var(--text-muted)', fontWeight: 700, fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Serie</th>
               <th style={{ padding: '0.6rem 1rem', color: 'var(--text-muted)', fontWeight: 700, fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Cliente</th>
-              <th style={{ padding: '0.6rem 1rem', color: 'var(--text-muted)', fontWeight: 700, fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Estado</th>
-              <th style={{ padding: '0.6rem 1rem', color: 'var(--text-muted)', fontWeight: 700, fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>&Oacute;rdenes</th>
+              <th className="eq-hide-mobile" style={{ padding: '0.6rem 1rem', color: 'var(--text-muted)', fontWeight: 700, fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Estado</th>
+              <th className="eq-hide-mobile" style={{ padding: '0.6rem 1rem', color: 'var(--text-muted)', fontWeight: 700, fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>&Oacute;rdenes</th>
               <th style={{ padding: '0.6rem 1rem', textAlign: 'right' }}></th>
             </tr>
           </thead>
@@ -123,12 +132,12 @@ export default function EquipmentsPage() {
                   <td style={{ padding: '0.6rem 1rem' }}>
                     <Link href={`/nexus/equipments/${eq.id}`} style={{ fontWeight: 700, color: 'var(--text)', textDecoration: 'none', fontSize: '0.85rem' }}>{eq.brand} {eq.model}</Link>
                   </td>
-                  <td style={{ padding: '0.6rem 1rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>{(eq.type || '').toUpperCase()}</td>
-                  <td style={{ padding: '0.6rem 1rem', fontSize: '0.78rem', color: 'var(--text-muted)' }}>{eq.serialNumber || '—'}</td>
+                  <td className="eq-hide-mobile" style={{ padding: '0.6rem 1rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>{(eq.type || '').toUpperCase()}</td>
+                  <td className="eq-hide-mobile" style={{ padding: '0.6rem 1rem', fontSize: '0.78rem', color: 'var(--text-muted)' }}>{eq.serialNumber || '—'}</td>
                   <td style={{ padding: '0.6rem 1rem', fontSize: '0.8rem' }}>
                     {client ? <Link href={`/nexus/clients/${client.id}`} style={{ color: 'var(--primary)', textDecoration: 'none', fontWeight: 600, fontSize: '0.78rem' }}>{client.name}</Link> : '—'}
                   </td>
-                  <td style={{ padding: '0.6rem 1rem' }}>
+                  <td className="eq-hide-mobile" style={{ padding: '0.6rem 1rem' }}>
                     {activeOrders.length > 0 ? (
                       <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.2rem', padding: '0.15rem 0.4rem', borderRadius: '6px', background: `${statusDef?.color}15`, color: statusDef?.color, fontSize: '0.6rem', fontWeight: 700 }}>
                         {statusDef?.label || 'En taller'}
@@ -141,7 +150,7 @@ export default function EquipmentsPage() {
                       <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Inactivo</span>
                     )}
                   </td>
-                  <td style={{ padding: '0.6rem 1rem', fontSize: '0.8rem' }}>
+                  <td className="eq-hide-mobile" style={{ padding: '0.6rem 1rem', fontSize: '0.8rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
                       <ClipboardList size={13} style={{ color: 'var(--text-muted)' }} />
                       <span style={{ fontWeight: 700 }}>{eqOrders.length}</span>
@@ -165,5 +174,3 @@ export default function EquipmentsPage() {
     </div>
   );
 }
-
-

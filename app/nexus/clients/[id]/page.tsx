@@ -64,6 +64,12 @@ export default function ClientDetailPage() {
 
   return (
     <div style={{ animation: 'fade-up 0.4s ease' }}>
+      <style>{`@media (max-width: 640px) {
+        .cd-actions { flex-direction: column !important; align-items: stretch !important; }
+        .cd-actions .btn, .cd-actions a { width: 100% !important; text-align: center !important; justify-content: center !important; }
+        .cd-equip-grid { grid-template-columns: 1fr !important; }
+        .cd-hide-mobile { display: none !important; }
+      }`}</style>
       <Link href="/nexus/clients" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', color: 'var(--text-muted)', textDecoration: 'none', fontSize: '0.8rem', fontWeight: 600, marginBottom: '1rem' }}>
         <ArrowLeft size={14} /> Volver a clientes
       </Link>
@@ -89,7 +95,7 @@ export default function ClientDetailPage() {
                 </div>
               </div>
               {editing ? (
-                <div style={{ display: 'flex', gap: '0.3rem' }}>
+                <div className="cd-actions" style={{ display: 'flex', gap: '0.3rem' }}>
                   <button onClick={handleSave} disabled={saving} className="btn btn-primary btn-sm" style={{ opacity: saving ? 0.5 : 1 }}>
                     <Check size={14} /> {saving ? 'Guardando...' : 'Guardar'}
                   </button>
@@ -155,7 +161,7 @@ export default function ClientDetailPage() {
           <div className="card">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.8rem' }}>
               <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.4rem' }}><Monitor size={16} /> Equipos ({equipments.length})</h3>
-              <Link href={`/nexus/equipments/new?clientId=${id}`} className="btn btn-primary btn-sm" style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}><Plus size={14} /> Nuevo equipo</Link>
+              <Link href={`/nexus/equipments/new?clientId=${id}`} className="btn btn-primary btn-sm cd-actions cd-hide-mobile" style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}><Plus size={14} /> Nuevo equipo</Link>
             </div>
             {equipments.length === 0 ? (
               <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>Este cliente no tiene equipos registrados.</p>

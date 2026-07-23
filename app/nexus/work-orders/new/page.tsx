@@ -8,6 +8,7 @@ import { createClient } from '@/app/actions/nexus/clients';
 import { getQuote } from '@/app/actions/nexus/quotes';
 import { getClients, ClientData } from '@/app/actions/nexus/clients';
 import { getEquipments, EquipmentData } from '@/app/actions/nexus/equipments';
+import { getSettings } from '@/app/actions/nexus/settings';
 import Link from 'next/link';
 import { ArrowLeft, Camera, X, Check, Plus } from 'lucide-react';
 import { Suspense } from 'react';
@@ -43,10 +44,12 @@ function NewWorkOrderForm() {
   const [creatingEquip, setCreatingEquip] = useState(false);
 
   useEffect(() => {
-    const savedTechs = localStorage.getItem('nexus-technicians');
-    const savedBranches = localStorage.getItem('nexus-branches');
-    if (savedTechs) setTechnicians(JSON.parse(savedTechs));
-    if (savedBranches) setBranches(JSON.parse(savedBranches));
+    getSettings().then(r => {
+      if (r.success) {
+        setTechnicians(r.settings.technicians);
+        setBranches(r.settings.branches);
+      }
+    });
   }, []);
 
   const loadData = () => Promise.all([getClients(), getEquipments()]).then(([cr, er]) => {

@@ -259,14 +259,16 @@ table tr { transition: background var(--transition); }
   .burger { display: block; }
   .section { padding-top: 3.5rem !important; padding-bottom: 3.5rem !important; }
   .nx-main { padding: 0.75rem !important; }
-  .card, .pw-card, .pq-card { padding: 0.75rem !important; }
-  table { font-size: 0.75rem !important; }
-  table th, table td { padding: 0.4rem 0.5rem !important; }
   h1 { font-size: 1.2rem !important; }
   h2 { font-size: 1.05rem !important; }
   .bento-grid { gap: 0.5rem !important; }
-  select, input:not([type="file"]), textarea { font-size: 0.75rem !important; padding: 0.4rem 0.55rem !important; }
-  .btn-sm { font-size: 0.68rem !important; padding: 0.3rem 0.6rem !important; }
   .table-wrap { border-radius: 8px !important; }
+  .card { padding: 0.75rem !important; }
+  .pw-card, .pq-card { padding: 0.75rem !important; }
+  table { font-size: 0.72rem !important; }
+  table th, table td { padding: 0.35rem 0.4rem !important; }
+  select, input:not([type="file"]), textarea { font-size: 0.75rem !important; padding: 0.35rem 0.5rem !important; }
+  .btn-sm { font-size: 0.68rem !important; padding: 0.3rem 0.6rem !important; }
   .btn-icon { width: 28px !important; height: 28px !important; }
+  .btn-icon svg { width: 14px !important; height: 14px !important; }
 }

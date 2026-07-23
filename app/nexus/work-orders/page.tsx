@@ -5,7 +5,7 @@ import { getWorkOrders, updateWorkOrderStatus, WorkOrderData } from '@/app/actio
 import { getClients, ClientData } from '@/app/actions/nexus/clients';
 import { getEquipments, EquipmentData } from '@/app/actions/nexus/equipments';
 import Link from 'next/link';
-import { ClipboardList, Plus, Search, Wrench, DollarSign, Clock, CheckCircle2, PlusCircle } from 'lucide-react';
+import { ClipboardList, Search, Wrench, DollarSign, Clock, CheckCircle2, PlusCircle } from 'lucide-react';
 import { WORK_ORDER_STATUSES } from '@/data/diagnosis-templates';
 import MonthYearFilter, { monthYearFilter } from '@/components/nexus/MonthYearFilter';
 
@@ -36,7 +36,6 @@ export default function WorkOrdersPage() {
 
   const activeOrders = filteredOrders.filter(o => o.status !== 'delivered');
   const totalPending = filteredOrders.filter(o => o.status !== 'delivered' && o.paymentStatus === 'pending').length;
-  const totalPaid = filteredOrders.filter(o => o.paymentStatus === 'paid').length;
   const activeFiltered = filteredOrders.filter(o => o.status !== 'cancelled');
   const totalRevenue = activeFiltered.reduce((s, o) => s + (o.totalAmount || 0), 0);
   const pendingRevenue = activeFiltered.filter(o => o.paymentStatus === 'pending').reduce((s, o) => s + (o.totalAmount || 0), 0);
@@ -66,24 +65,36 @@ export default function WorkOrdersPage() {
 
   return (
     <div style={{ animation: 'fade-up 0.4s ease' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+      <style>{`@media (max-width: 640px) {
+        .wo-header { flex-direction: column !important; align-items: stretch !important; gap: 0.75rem !important; }
+        .wo-header .btn { width: 100% !important; text-align: center !important; font-size: 0.85rem !important; padding: 0.55rem 1rem !important; }
+        .wo-actions { width: 100% !important; }
+        .wo-actions > div:first-child { display: none !important; }
+        .wo-actions .search-wrap { width: 100% !important; }
+        .wo-actions .search-icon { display: none !important; }
+        .wo-actions input { font-size: 0.85rem !important; padding: 0.55rem 0.8rem !important; }
+        .wo-kpis { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 0.4rem !important; }
+        .wo-kpis > div { width: 100% !important; }
+      }`}</style>
+
+      <div className="wo-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
         <div>
           <h1 style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}><ClipboardList size={24} style={{ color: 'var(--primary)' }} /> Órdenes</h1>
           <p className="text-muted" style={{ fontSize: '0.8rem' }}>{activeOrders.length} activas · {filteredOrders.length} totales</p>
         </div>
-        <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
+        <div className="wo-actions" style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
           <Link href="/nexus/work-orders/new" className="btn btn-primary btn-sm" style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}><PlusCircle size={15} /> Nueva orden</Link>
-          <MonthYearFilter selectedMonth={filterMonth} selectedYear={filterYear} onChange={(m, y) => { setFilterMonth(m); setFilterYear(y); }} />
-          <div style={{ position: 'relative', width: '200px' }}>
-            <Search size={16} style={{ position: 'absolute', left: '0.8rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+          <div><MonthYearFilter selectedMonth={filterMonth} selectedYear={filterYear} onChange={(m, y) => { setFilterMonth(m); setFilterYear(y); }} /></div>
+          <div className="search-wrap" style={{ position: 'relative', width: '200px' }}>
+            <Search size={16} className="search-icon" style={{ position: 'absolute', left: '0.8rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
             <input placeholder="Buscar..." value={search} onChange={e => setSearch(e.target.value)}
               style={{ width: '100%', padding: '0.5rem 0.8rem 0.5rem 2.2rem', background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '8px', color: 'var(--text)', fontSize: '0.8rem', fontFamily: 'inherit', outline: 'none' }} />
           </div>
         </div>
       </div>
 
-      {/* KPIs - 5 en una fila */}
-      <div style={{ display: 'flex', gap: '0.65rem', marginBottom: '1.2rem' }}>
+      {/* KPIs - 2 columns on mobile */}
+      <div className="wo-kpis" style={{ display: 'flex', gap: '0.65rem', marginBottom: '1.2rem' }}>
         {kpis.map((kpi, i) => {
           const Icon = kpi.icon;
           return (

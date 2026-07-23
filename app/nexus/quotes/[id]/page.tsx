@@ -177,16 +177,28 @@ export default function QuoteDetailPage() {
                 </div>
 
                 {editItems.map((item, i) => (
-                  <div key={i} style={{ display: 'flex', gap: '0.3rem', alignItems: 'center', marginBottom: '0.25rem' }}>
-                    <select value={item.type} onChange={e => updateItem(i, 'type', e.target.value)} style={{ ...s, width: '80px', fontSize: '0.7rem', padding: '0.3rem' }}>
-                      <option value="labor">MO</option>
-                      <option value="part">Resp.</option>
-                    </select>
-                    <input placeholder="Descripci&oacute;n" value={item.description} onChange={e => updateItem(i, 'description', e.target.value)} style={{ ...s, flex: 1, fontSize: '0.8rem' }} />
-                    <input type="number" value={item.quantity || ''} onChange={e => updateItem(i, 'quantity', Math.max(1, parseInt(e.target.value) || 1))} style={{ ...s, width: '45px', fontSize: '0.75rem', textAlign: 'center' }} />
-                    <input type="number" value={item.unitPrice || ''} onChange={e => updateItem(i, 'unitPrice', parseInt(e.target.value) || 0)} style={{ ...s, width: '90px', fontSize: '0.75rem', textAlign: 'right' }} />
-                    <span style={{ fontWeight: 700, fontSize: '0.8rem', width: '70px', textAlign: 'right' }}>${(item.quantity * item.unitPrice).toLocaleString('es-CL')}</span>
-                    <button onClick={() => removeItem(i)} className="btn-icon" style={{ color: '#ef4444' }}><Trash2 size={14} /></button>
+                  <div key={i} style={{ padding: '0.5rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg)', marginBottom: '0.4rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.3rem' }}>
+                      <select value={item.type} onChange={e => updateItem(i, 'type', e.target.value)} style={{ width: 'auto', padding: '0.3rem 0.5rem', borderRadius: '6px', border: '1px solid var(--border)', background: '#fff', color: 'var(--text)', fontSize: '0.78rem', fontFamily: 'inherit', cursor: 'pointer' }}>
+                        <option value="labor">🛠 Mano de obra</option>
+                        <option value="part">🔧 Repuesto</option>
+                      </select>
+                      <button onClick={() => removeItem(i)} className="btn-icon" style={{ color: '#ef4444', width: '28px', height: '28px' }}><Trash2 size={14} /></button>
+                    </div>
+                    <input placeholder="Descripci&oacute;n del servicio o repuesto..." value={item.description} onChange={e => updateItem(i, 'description', e.target.value)} style={{ ...s, fontSize: '0.85rem', padding: '0.4rem 0.6rem', marginBottom: '0.3rem' }} />
+                    <div style={{ display: 'flex', gap: '0.3rem', alignItems: 'center' }}>
+                      <div style={{ flex: 1 }}>
+                        <label style={{ fontSize: '0.62rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '0.1rem' }}>Cantidad</label>
+                        <input type="number" value={item.quantity || ''} onChange={e => updateItem(i, 'quantity', Math.max(1, parseInt(e.target.value) || 1))} style={{ ...s, fontSize: '0.85rem', padding: '0.4rem 0.6rem', textAlign: 'center' }} />
+                      </div>
+                      <div style={{ flex: 2 }}>
+                        <label style={{ fontSize: '0.62rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '0.1rem' }}>Precio unitario</label>
+                        <input type="number" value={item.unitPrice || ''} onChange={e => updateItem(i, 'unitPrice', parseInt(e.target.value) || 0)} style={{ ...s, fontSize: '0.85rem', padding: '0.4rem 0.6rem', textAlign: 'right' }} />
+                      </div>
+                    </div>
+                    <div style={{ textAlign: 'right', marginTop: '0.2rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                      Subtotal: <span style={{ fontWeight: 700, color: 'var(--text)', fontSize: '0.9rem' }}>${(item.quantity * item.unitPrice).toLocaleString('es-CL')}</span>
+                    </div>
                   </div>
                 ))}
 
@@ -222,28 +234,28 @@ export default function QuoteDetailPage() {
             <h3 style={{ fontSize: '0.85rem', marginBottom: '0.5rem' }}>Acciones</h3>
             <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
               {linkedOrderId ? (
-                <Link href={`/nexus/work-orders/${linkedOrderId}`} className="btn btn-primary btn-sm" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
-                  <ExternalLink size={14} /> Seguimiento
+                <Link href={`/nexus/work-orders/${linkedOrderId}`} className="btn btn-primary btn-sm" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontSize: '1rem', padding: '0.55rem 1.2rem' }}>
+                  <ExternalLink size={15} /> Seguimiento
                 </Link>
               ) : quote.status === 'approved' && !linkedOrderId ? (
-                <Link href={`/nexus/work-orders/new?quoteId=${id}`} className="btn btn-primary btn-sm">Crear orden</Link>
+                <Link href={`/nexus/work-orders/new?quoteId=${id}`} className="btn btn-primary btn-sm" style={{ fontSize: '1rem', padding: '0.55rem 1.2rem' }}>Crear orden</Link>
               ) : null}
               {(quote.status === 'draft' || quote.status === 'sent') && (
-                <button onClick={() => handleStatus(quote.status === 'draft' ? 'sent' : 'approved')} className="btn btn-primary btn-sm" style={{ display: 'flex', alignItems: 'center', gap: '0.2rem', background: quote.status === 'draft' ? '#3b82f6' : '#10b981' }}>
-                  <Send size={13} /> {quote.status === 'draft' ? 'Marcar enviada' : 'Aprobar'}
+                <button onClick={() => handleStatus(quote.status === 'draft' ? 'sent' : 'approved')} className="btn btn-primary btn-sm" style={{ background: quote.status === 'draft' ? '#3b82f6' : '#10b981', fontSize: '1rem', padding: '0.55rem 1.2rem' }}>
+                  <Send size={15} /> {quote.status === 'draft' ? 'Marcar enviada' : 'Aprobar'}
                 </button>
               )}
               {quote.status === 'sent' && (
-                <button onClick={() => handleStatus('draft')} className="btn btn-outline btn-sm" style={{ display: 'flex', alignItems: 'center', gap: '0.2rem', fontSize: '0.72rem' }}>
-                  <X size={13} /> Retroceder a Borrador
+                <button onClick={() => handleStatus('draft')} className="btn btn-outline btn-sm" style={{ fontSize: '1rem', padding: '0.55rem 1.2rem' }}>
+                  <X size={15} /> Retroceder a Borrador
                 </button>
               )}
               {quote.status === 'approved' && !linkedOrderId && (
-                <button onClick={() => handleStatus('sent')} className="btn btn-outline btn-sm" style={{ display: 'flex', alignItems: 'center', gap: '0.2rem', fontSize: '0.72rem', color: '#f59e0b' }}>
-                  <X size={13} /> Retroceder a Enviada
+                <button onClick={() => handleStatus('sent')} className="btn btn-outline btn-sm" style={{ fontSize: '1rem', padding: '0.55rem 1.2rem', color: '#f59e0b' }}>
+                  <X size={15} /> Retroceder a Enviada
                 </button>
               )}
-              <button onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/p/quote/${id}`); alert('Link público copiado'); }} className="btn btn-outline btn-sm" style={{ display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
+              <button onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/p/quote/${id}`); alert('Link público copiado'); }} className="btn btn-outline btn-sm" style={{ fontSize: '1rem', padding: '0.55rem 1.2rem' }}>
                 <ExternalLink size={13} /> Link público
               </button>
             </div>

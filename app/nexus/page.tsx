@@ -60,7 +60,7 @@ export default function NexusDashboard() {
 
   return (
     <div style={{ animation: 'fade-up 0.4s ease' }}>
-      <style>{`@media (max-width: 640px) { .dash-header { flex-direction: column !important; align-items: stretch !important; gap: 0.75rem !important; } .dash-actions { flex-direction: column !important; align-items: stretch !important; gap: 0.5rem !important; width: 100% !important; } .dash-actions .btn { width: 100% !important; text-align: center !important; font-size: 0.82rem !important; padding: 0.55rem 1rem !important; } .dash-actions > div { width: 100% !important; justify-content: center !important; } }`}</style>
+      <style>{`@media (max-width: 640px) { .dash-header { flex-direction: column !important; align-items: stretch !important; gap: 0.75rem !important; } .dash-actions { flex-direction: column !important; align-items: stretch !important; gap: 0.5rem !important; width: 100% !important; } .dash-actions .btn { width: 100% !important; text-align: center !important; font-size: 0.82rem !important; padding: 0.55rem 1rem !important; } .dash-actions > div { width: 100% !important; justify-content: center !important; } .dash-kpi-grid { grid-template-columns: 1fr 1fr !important; } }`}</style>
       {/* Header */}
       <div className="dash-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.2rem', flexWrap: 'wrap', gap: '0.5rem' }}>
         <div>
@@ -72,13 +72,13 @@ export default function NexusDashboard() {
         </div>
         <div className="dash-actions" style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
           <Link href="/nexus/work-orders/new" className="btn btn-primary btn-sm" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', padding: '0.5rem 1.1rem' }}><PlusCircle size={16} /> Nueva orden</Link>
-          <MonthYearFilter selectedMonth={filterMonth} selectedYear={filterYear} onChange={handleFilterChange} />
+          <div><MonthYearFilter selectedMonth={filterMonth} selectedYear={filterYear} onChange={handleFilterChange} /></div>
         </div>
       </div>
 
       {/* Totals row */}
       <div style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', marginBottom: '0.4rem' }}>Totales generales</div>
-      <div className="bento-grid" style={{ marginBottom: '1rem' }}>
+      <div className="bento-grid dash-kpi-grid" style={{ marginBottom: '1rem' }}>
         {totalCards.map((card, i) => {
           const Icon = card.icon;
           return (
@@ -101,7 +101,7 @@ export default function NexusDashboard() {
       <div style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', marginBottom: '0.4rem' }}>
         {['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'][filterMonth]} {filterYear}
       </div>
-      <div className="bento-grid" style={{ marginBottom: '1.2rem' }}>
+      <div className="bento-grid dash-kpi-grid" style={{ marginBottom: '1.2rem' }}>
         {monthCards.map((card, i) => {
           const Icon = card.icon;
           return (
